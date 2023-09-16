@@ -66,10 +66,11 @@ export default function Login() {
                             </div>
                             <TextField label="Login" margin="normal" />
                             <TextField label="Senha" margin="normal" type="password" />
-                            <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15, boxShadow: '0px 2px 9px #6c63ff'}}>
-                                <Button>
+                            <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15}}>
+                                <Button color="primary" variant="contained">
                                     Entrar
                                 </Button>
+                                <p> Não possui um usuário ainda? <Button style={{ textTransform: 'none', outline: 'none' }}> Cadastre-se </Button></p>
                             </div>
                         </div>
                     <div />
