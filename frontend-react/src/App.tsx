@@ -12,7 +12,7 @@ function App() {
       <div className="flex">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/inicio" element={<Login />} />
+          <Route path="/inicio" element={<Inicio />} />
           <Route path="/cadastros/*" element={<Produto />}>
             <Route path="fornecedores" element={<Inicio />} />
             <Route path="unidades" element={<Inicio />} />
