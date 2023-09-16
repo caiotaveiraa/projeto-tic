@@ -1,5 +1,6 @@
 import Inicio from './components/Inicio'
 import Login from './components/Login/Login'
+import Cadastrar from './components/Login/CadastrarUsuario'
 import Nfe from './components/Nfe'
 import Produto from './components/Produtos'
 import './styles/global.css'
@@ -12,7 +13,8 @@ function App() {
       <div className="flex">
         <Routes>
           <Route path="/" element={<Login />} />
-          <Route path="/inicio" element={<Login />} />
+          <Route path="/novousuario" element={<Cadastrar />} />
+          <Route path="/inicio" element={<Inicio />} />
           <Route path="/cadastros/*" element={<Produto />}>
             <Route path="fornecedores" element={<Inicio />} />
             <Route path="unidades" element={<Inicio />} />
