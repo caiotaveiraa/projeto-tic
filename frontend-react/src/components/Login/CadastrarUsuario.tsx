@@ -1,9 +1,9 @@
-import { Button, Grid, TextField } from "@mui/material"
+import { Button, Grid, TextField, Checkbox, FormControlLabel } from "@mui/material"
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import Swal from 'sweetalert2'
 
-export default function Login() {
+export default function CadastrarUsuario() {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -47,7 +47,13 @@ export default function Login() {
                 });
             }
         }
-    }
+    }  
+
+    const [checked, setChecked] = useState(false);
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setChecked(event.target.checked);
+    };
 
     return (
         <div>
@@ -56,15 +62,15 @@ export default function Login() {
                     <div />
                         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300}}>
                             <div>
-                                <h2 style={{color:"#000000", fontSize: 30, fontFamily:"Lucida Sans"}}>
-                                    Bem vindo!
+                                <h2 style={{color:"#000000", fontSize: 30, fontFamily:"Lucida Sans", textAlign:"center"}}>
+                                    Crie sua conta.
                                 </h2>
-                                <h3 style={{color:"#000000", marginBottom:20, marginTop:5, fontFamily:"Verdana"}}>
-                                    Digite suas credenciais para acessar o site.
-                                </h3>
                             </div>
+                            <TextField label="Nome" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
                             <TextField label="Login" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
                             <TextField label="Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <TextField label="Repita a Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} color="primary" />} label="Usuario administrador" />
                             <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15}}>
                                 <Button type="submit" color="primary" variant="contained" onClick={handleLogin}>
                                     Entrar
