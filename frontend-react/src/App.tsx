@@ -1,4 +1,4 @@
-import Login from './components/Login'
+import Login from './components/Login/Login'
 import { ProdutoP } from './components/ProdutoP'
 import './styles/global.css'
 import {Route, BrowserRouter as Router, Routes} from 'react-router-dom'
