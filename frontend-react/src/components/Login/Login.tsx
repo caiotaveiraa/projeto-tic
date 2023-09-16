@@ -10,10 +10,9 @@ export default function Login() {
 
     const navigate = useNavigate()
 
-    const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+    const handleLogin = async () => {
 
-        const resp = await fetch(`http://localhost:3000/users?username=${username}`, {
+        const resp = await fetch(`http://localhost:3333/usuario/${username}`, {
             method: 'GET',
         })        
 
@@ -21,7 +20,7 @@ export default function Login() {
             return resposta.json()
         })
 
-        if (resp.length === 0) {
+        if (resp === null || resp === undefined) {
             Swal.fire({
                 title: 'Erro',
                 text: 'Usuário ou senha estão incorretos',
@@ -29,7 +28,7 @@ export default function Login() {
                 confirmButtonText: 'OK'
             })
         } else {
-            if (resp[0].password !== password) {
+            if (resp.senha !== password) {
                 Swal.fire({
                     title: 'Erro',
                     text: 'Usuário ou senha estão incorretos',
@@ -43,7 +42,7 @@ export default function Login() {
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        navigate('/produto', { state: { username: username } });
+                        navigate('/inicio', { state: { username: username } });
                     }
                 });
             }
@@ -70,10 +69,10 @@ export default function Login() {
                                     Digite suas credenciais para acessar o site.
                                 </h3>
                             </div>
-                            <TextField label="Login" margin="normal" />
-                            <TextField label="Senha" margin="normal" type="password" />
+                            <TextField label="Login" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
+                            <TextField label="Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                             <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15}}>
-                                <Button color="primary" variant="contained">
+                                <Button type="submit" color="primary" variant="contained" onClick={handleLogin}>
                                     Entrar
                                 </Button>
                                 <p style={{color:"#000000"}}> Não possui um usuário ainda? 
