@@ -4,34 +4,13 @@ import {useState, useEffect} from 'react'
 import {MdEdit, MdOutlineDeleteOutline} from 'react-icons/md'
 import Menu from './Menu';
 
+interface localEstoqueProps { // tipo de dado
+  idlocal: number,
+  nomelocal: string,
+}
+
 export default function LocalEstoque()  {
 
-    // esta variável vai conter o username passado na navegação
-    const location = useLocation();
-    // recupera o username
-    //vamos utilizar Cookies para armazenar o username - BREVE
-    const username = location.state?.username || '';
-    
-      return (
-          <>
-          <div className="flex-col">
-          <Menu username={username}/>
-        </div>
-          <div className="flex flex-col items-center justify-center ">
-              <div className="max-w-md mx-10 my-5 mb-4">
-                  Página de LOCAIS
-              </div>
-          </div>
-          </>
-      )
-}
-
-/*interface localEstoqueProps { // tipo de dado
-  id: number,
-  name: string,
-}
-
-export function LocalEstoque() {
   // esta variável vai conter o username passado na navegação
   const location = useLocation();
   // recupera o username
@@ -42,10 +21,10 @@ export function LocalEstoque() {
   const [locais, setLocais] = useState<localEstoqueProps[]>([])
 
   // variáveis de estado para os campos do formulário
-  const [name, setName] = useState('')
+  const [nomelocal, setName] = useState('')
   
   // diferencia se vai inserir (id = 0) ou editar (id não for 0) um produto
-  const [id, setId] = useState(0)
+  const [idlocal, setId] = useState(0)
 
   // fazer o hook useEffect para carregar os locais da API
     useEffect( () => {
@@ -67,5 +46,37 @@ export function LocalEstoque() {
     buscaLocais()
   } , [username])
 
+  return (
+    <>
+    
+    <div className="flex-col">
+        <Menu username={username}/>
+    </div>
+    <div className="flex flex-col items-center justify-center ">
+      <div className="max-w-md mx-10 my-5 mb-4">
+        {/* lista de Locais dentro de uma tabela */}
+        <h2 className="font-bold mb-4"> Lista de Locais </h2>
+        <table className="w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="border border-gray-300 px-4 py-2">ID</th>
+              <th className="border border-gray-300 px-4 py-2">Nome</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              locais.map( (Local) => (
+                <tr key={Local.id}>
+                  <td className="border border-gray-300 px-4 py-2"  >{Local.idlocal}</td>
+                  <td className="border border-gray-300 px-4 py-2">{Local.nomelocal}</td>
+                </tr>
+              ) /* fim da função dentro do map */
+              ) /* fim do map */
+            } {/* fim do reactjs */}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </>
+  )
 }
-export default LocalEstoque;*/
