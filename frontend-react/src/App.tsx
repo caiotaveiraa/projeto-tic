@@ -1,6 +1,5 @@
 import Inicio from './components/Inicio'
 import Login from './components/Login/Login'
-import Menu from './components/Menu'
 import Nfe from './components/Nfe'
 import Produto from './components/Produtos'
 import './styles/global.css'
@@ -11,9 +10,6 @@ function App() {
   return (
     <Router>
       <div className="flex">
-        <div className="flex-col">
-          <Menu/>
-        </div>
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/inicio" element={<Login />} />

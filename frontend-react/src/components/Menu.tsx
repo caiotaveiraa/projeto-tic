@@ -4,6 +4,10 @@ import { AiOutlineAppstoreAdd, AiOutlineFileAdd } from 'react-icons/ai';
 import {RiPagesLine} from 'react-icons/ri'
 import { Link } from 'react-router-dom';
 
+interface MenuProps {
+  username: string
+}
+
 function Submenu() {
   return (
     <ul className="ml-4">
@@ -53,7 +57,21 @@ function Submenu() {
   );
 }
 
-export default function Menu() {
+function SubMenuRelatorios()
+{
+  return (
+    <ul className="ml-4">
+      <li>
+        <Link to="/cadastros/fornecedores" className="flex items-center text-gray-700">
+            <RiPagesLine size={5} />
+            <span className="mx-4 font-medium"> Relatorio 1 </span>
+        </Link>
+      </li>
+    </ul>
+  );
+}
+
+export default function Menu({username}: MenuProps) {
 
   const [submenuOpen, setSubmenuOpen] = useState(false);
 
@@ -61,10 +79,17 @@ export default function Menu() {
     setSubmenuOpen(!submenuOpen);
   };
 
+  const [submenurelOpen, setSubmenurelOpen] = useState(false);
+
+  const toggleSubmenuRel = () => {
+    setSubmenurelOpen(!submenurelOpen);
+  };
+
 
   return (
     <div className="flex flex-col w-64 h-screen overflow-y-auto px-4 py-8 border-r">
       <h2 className="text-blue-800 font-semibold text-center text-3xl"> Sistema da Creche </h2>
+      <h3 className="text-blue-800 font-semibold text-center text-3xl"> {username} </h3>
       <div className="flex flex-col justify-between mt-6">
         <aside>
           <ul>
@@ -92,10 +117,15 @@ export default function Menu() {
               </Link>
             </li>
             <li className="mb-4">
-              <Link to="/relatorios" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md">
+              <div
+                className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-md cursor-pointer"
+                onClick={toggleSubmenuRel}
+              >
                 <RiPagesLine size={20} />
                 <span className="mx-4 font-medium"> Relatórios </span>
-              </Link>
+                <span className="ml-auto">{submenurelOpen ? '-' : '+'}</span>
+              </div>
+              {submenurelOpen && <SubMenuRelatorios />}
             </li>
           </ul>
         </aside>
