@@ -75,10 +75,6 @@ export default function Login() {
                                 <Button type="submit" color="primary" variant="contained" onClick={handleLogin}>
                                     Entrar
                                 </Button>
-                                <p style={{color:"#000000"}}> Não possui um usuário ainda? 
-                                <Button style={{ textTransform: 'none', outline: 'none' }}> 
-                                    Cadastre-se 
-                                </Button></p>
                             </div>
                         </div>
                     <div />
