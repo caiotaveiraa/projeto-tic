@@ -265,6 +265,12 @@ export async function AppRoutes(server:FastifyInstance){
     
     // Login
 
+    server.get('/usuarios', async () => {        
+        const usuarios = await prisma.tbusuarios.findMany()
+    
+        return usuarios
+    })
+
     server.get('/usuario/:usu_login', async (request) => {
 
         const idParam = z.object({
@@ -285,6 +291,7 @@ export async function AppRoutes(server:FastifyInstance){
             usu_login: z.string(),
             nome: z.string(),
             senha: z.string(),
+            usu_admin: z.boolean()
         })
 
         const dtcriacao = new Date();
@@ -293,6 +300,7 @@ export async function AppRoutes(server:FastifyInstance){
             usu_login,
             nome,
             senha,
+            usu_admin
         } = postBody.parse(request.body)
     
         const newUsuario = await prisma.tbusuarios.create({
@@ -300,7 +308,8 @@ export async function AppRoutes(server:FastifyInstance){
                 usu_login,
                 nome,
                 senha,
-                dtcriacao
+                dtcriacao,
+                usu_admin
             },
         })
     

@@ -5,55 +5,74 @@ import Swal from 'sweetalert2'
 
 export default function CadastrarUsuario() {
 
+    const [nome, setNome] = useState('')
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-
-    const navigate = useNavigate()
-
-    const handleLogin = async () => {
-
-        const resp = await fetch(`http://localhost:3333/usuario/${username}`, {
-            method: 'GET',
-        })        
-
-        .then (resposta => {
-            return resposta.json()
-        })
-
-        if (resp === null || resp === undefined) {
-            Swal.fire({
-                title: 'Erro',
-                text: 'Usuário ou senha estão incorretos',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            })
-        } else {
-            if (resp.senha !== password) {
-                Swal.fire({
-                    title: 'Erro',
-                    text: 'Usuário ou senha estão incorretos',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                })
-            } else {
-                Swal.fire({
-                    title: 'Sucesso',
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        navigate('/inicio', { state: { username: username } });
-                    }
-                });
-            }
-        }
-    }  
-
+    const [passwordconfirm, setPasswordconfirm] = useState('')
     const [checked, setChecked] = useState(false);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setChecked(event.target.checked);
     };
+
+    const navigate = useNavigate()
+
+    const handleLogin = async () => {
+
+        if(password === passwordconfirm){
+            const data = {
+                usu_login: username,
+                nome: nome,
+                senha: password,
+                usu_admin: checked,
+            }
+            try{
+                const resp = await fetch("http://localhost:3333/usuario/add", {
+                    method: "POST",
+                    headers: {
+                    "Content-Type": "application/json", // Indica que estamos JSON no corpo da solicitação
+                    },
+                    body: JSON.stringify(data), // Converte o objeto 'data' em JSON e o define como o corpo da solicitação
+                })    
+        
+                .then (resposta => {
+                    return resposta.json()
+                })
+                if (resp === null || resp === undefined) {
+                    Swal.fire({
+                        title: 'Erro',
+                        text: 'Usuário não cadastrado',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    })
+                } else {
+                    Swal.fire({
+                        title: 'Sucesso',
+                        text: 'Usuário cadastrado com sucesso',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                        })
+                        
+                        .then((result) => {
+                        if (result.isConfirmed) {
+                            navigate('/usuarios', { state: { username: username } });
+                        }
+                        });
+                    }
+            }
+            catch(error) {
+                console.log(error)
+            }
+        }
+        else{
+            Swal.fire({
+                title: 'Erro',
+                text: 'As senhas não conferem',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            })
+        }
+    }  
 
     return (
         <div>
@@ -66,10 +85,10 @@ export default function CadastrarUsuario() {
                                     Crie sua conta.
                                 </h2>
                             </div>
-                            <TextField label="Nome" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
+                            <TextField label="Nome" margin="normal" value={nome} onChange={(e) => setNome(e.target.value)} />
                             <TextField label="Login" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
                             <TextField label="Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                            <TextField label="Repita a Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                            <TextField label="Repita a Senha" margin="normal" type="password" value={passwordconfirm} onChange={(e) => setPasswordconfirm(e.target.value)} />
                             <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} color="primary" />} label="Usuario administrador" />
                             <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15}}>
                                 <Button type="submit" color="primary" variant="contained" onClick={handleLogin}>
