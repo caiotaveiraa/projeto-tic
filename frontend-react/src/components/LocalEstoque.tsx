@@ -70,8 +70,8 @@ export default function LocalEstoque()  {
     }
 
     const handleEdit = (Local: localEstoqueProps) => {
+      setShowModal(true)
       setNomeLocal(Local.nomelocal)
-      console.log(Local.idlocal)
       setId(Local.idlocal) // usado para eu filtrar se é uma criação ou edição do local
     }
 
