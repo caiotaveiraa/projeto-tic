@@ -1,8 +1,9 @@
 
 import {useLocation} from 'react-router-dom';
 import {useState, useEffect} from 'react'
-import {MdOutlineEdit, MdOutlineDeleteOutline, } from 'react-icons/md'
+import {MdOutlineEdit, MdOutlineDeleteOutline, MdOutlineSave} from 'react-icons/md' 
 import {HiOutlinePlusCircle} from 'react-icons/hi'
+import {IoMdCloseCircle} from 'react-icons/io'
 import Menu from './Menu';
 
 
@@ -25,8 +26,6 @@ export default function LocalEstoque()  {
   // variáveis de estado para os campos do formulário
   const [showModal, setShowModal] = useState(false);
   const [nomelocal, setNomeLocal] = useState('');
-
-  // diferencia se vai inserir (id = 0) ou editar (id não for 0) um produto
   const [idlocal, setId] = useState(0)
 
   // fazer o hook useEffect para carregar os locais da API
@@ -71,7 +70,7 @@ export default function LocalEstoque()  {
     }
 
     const handleEdit = (Local: localEstoqueProps) => {
-      setName(Local.nomelocal)
+      setNomeLocal(Local.nomelocal)
       console.log(Local.idlocal)
       setId(Local.idlocal) // usado para eu filtrar se é uma criação ou edição do local
     }
@@ -84,11 +83,35 @@ export default function LocalEstoque()  {
       setShowModal(false);
     }
 
-    const handleFormSubmit = async (e) => {
-      e.preventDefault();
-  
-      // Envie os dados do formulário para a API ou faça o que for necessário para cadastrar o estoque.
-  
+    const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault() // evita que a página seja recarregada
+    
+    let Local
+
+    Local = {
+      nomelocal
+      }
+      try {
+        // chamar a API para cadastrar o local
+        const LocalCadastrado = await fetch(`http://localhost:3333/locaisEstoque/add`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(Local)
+        })
+        .then( response => {
+          return response.json()
+        })
+        // atualiza a lista de local
+        // monta uma nova lista com a lista anterior + local cadastrado
+         
+        setLocais([...locais, LocalCadastrado])
+      }
+      catch(error) {
+        console.log(error)
+      }
+      
       // Após o cadastro bem-sucedido, feche a modal.
       setShowModal(false);
     }
@@ -102,25 +125,30 @@ export default function LocalEstoque()  {
       <div className="max-w-lg mx-10 my-5 mb-4 "> 
         {/* lista de Locais dentro de uma tabela */}
         <div style={{ background: "linear-gradient(to right, #40E0D0, #4682B4)"}}>
-          <h2 className="font-bold mb-4" style={{ color: '#000000'}}> Locais de Locais </h2>
+          <h2 className="font-bold mb-4" style={{ color: '#000000'}}> Locais de Estoque </h2>
         </div>
         <button onClick={() => handleOpenModal()} style={{backgroundColor: '#A4EA4F', color: '#000000',  display: 'flex', alignItems: 'center', height: '25px', marginBottom: '10px'}} > 
           <HiOutlinePlusCircle size={15} style={{ color: '#000000', marginRight: '3px' }}/> <span style={{ fontSize: '10px'}}> Novo registro  </span>
         </button>
-        {/* Modal para cadastrar estoque */}
+
+        {/* Modal para cadastrar local */}
         {showModal && (
           <div className="modal" 	
           style={{position: 'fixed', top: '0', left: '0', right: '0', bottom: '0', background: 'rgba(0, 0, 0, 0.7)', zIndex: '1000', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <div className="modal-content"  style={{background: '#fff', padding: '20px', width: '80%', maxWidth: '400px', borderRadius: '5px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'}}>
-              <span className="close" onClick={handleCloseModal} style={{ color: '#000000'}} >&times;</span> 
-              <span style={{ color: '#000000'}}> Cadastro de Estoque </span> 
-              <form onSubmit={handleFormSubmit}>
-                <label htmlFor="nomeLocal" style={{ color: '#000000'}}> Nome do Local: </label>
-                <input type="text" id="nomeLocal" name="nomeLocal" value={nomelocal} onChange={(e) => setNomeLocal(e.target.value)} required />
-                <button type="submit"  style={{backgroundColor: '#A4EA4F', color: '#000000',  display: 'flex', alignItems: 'center', height: '25px', marginBottom: '10px'}}>
-                  Cadastrar
+            <div className="modal-content"  style={{background: '#d3d3d3', padding: '20px', width: '80%', maxWidth: '400px', borderRadius: '5px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)'}}>
+              <span style={{ color: '#000000', fontWeight: 'bold'}}> Cadastro de Estoque </span> 
+              <form onSubmit={handleSubmit}>
+                <label htmlFor="nomeLocal" style={{ color: '#000000'}}> Nome: </label> <br /> 
+                <input style={{background: '#fff'}} type="text" id="nomeLocal" name="nomeLocal" value={nomelocal} onChange={(e) => setNomeLocal(e.target.value)} required />
+              </form>  
+              <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
+                <button  type="submit"  style={{ color: '#A4EA4F',  display: 'flex', alignItems: 'center', height: '25px'}}>
+                  <MdOutlineSave/>
                 </button>
-              </form>
+                <button onClick={handleCloseModal} style={{ background: 'transparent', color: '#FF0000',  display: 'flex', alignItems: 'center', height: '25px', marginBottom: '10px'}}>
+                  <IoMdCloseCircle/>
+                </button>
+              </div>
             </div>
           </div>
         )}
