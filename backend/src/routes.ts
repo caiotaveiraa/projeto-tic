@@ -490,7 +490,7 @@ export async function AppRoutes(server:FastifyInstance){
         const {idlocal,
               nomelocal} = putBody.parse(request.body)
 
-        const locaisUpdate = await prisma.tblocais.updateMany({
+        const locaisUpdate = await prisma.tblocais.update({
             where: {
                 idlocal : idlocal,
             },
@@ -498,7 +498,7 @@ export async function AppRoutes(server:FastifyInstance){
                 nomelocal
             },
         })
-        return (locaisUpdate.count >= 1) ?  'Atualização realizada com sucesso!' :  'Nada foi atualizado!'
+        return locaisUpdate ?  locaisUpdate :  {}
     })
 
     server.delete('/locaisEstoque/delete/:LocalId', async (request) => {

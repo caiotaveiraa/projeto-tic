@@ -76,6 +76,8 @@ export default function LocalEstoque()  {
     }
 
     const handleOpenModal = () => {
+      setNomeLocal('')
+      setId(0)
       setShowModal(true);
     }
   
@@ -83,18 +85,34 @@ export default function LocalEstoque()  {
       setShowModal(false);
     }
 
-    const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => 
+    {
       e.preventDefault() // evita que a página seja recarregada
-    
-    let Local
-
-    Local = {
-      nomelocal
+      let Local
+      let verb
+      let url
+      if(idlocal == 0){
+        //inserção de local
+        verb = `POST`
+        url = `http://localhost:3333/locaisEstoque/add`
+        Local = {
+          nomelocal
+          }
+      }
+      else{
+        //atualizacao de local
+        verb = `PUT`
+        url = `http://localhost:3333/locaisEstoque/update`
+        Local = {
+          idlocal,
+          nomelocal
+          }
       }
       try {
+        console.log(Local)
         // chamar a API para cadastrar o local
-        const LocalCadastrado = await fetch(`http://localhost:3333/locaisEstoque/add`, {
-          method: 'POST',
+        const LocalCadastrado = await fetch(url, {
+          method: verb,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -103,16 +121,24 @@ export default function LocalEstoque()  {
         .then( response => {
           return response.json()
         })
-        // atualiza a lista de local
-        // monta uma nova lista com a lista anterior + local cadastrado
-         
-        setLocais([...locais, LocalCadastrado])
+        if (idlocal == 0) { // insere
+          setLocais([...locais, LocalCadastrado])
+       }
+       else { // atualiza na lista o produto alterado
+          setLocais(locais.map( (local) => {
+            if (local.idlocal === idlocal) {
+              return LocalCadastrado
+            }
+            else {
+              return local
+            }
+          }))
+       }
       }
       catch(error) {
         console.log(error)
       }
-      
-      // Após o cadastro bem-sucedido, feche a modal.
+        // Após o cadastro bem-sucedido, feche a modal.
       setShowModal(false);
     }
 
@@ -140,15 +166,15 @@ export default function LocalEstoque()  {
               <form onSubmit={handleSubmit}>
                 <label htmlFor="nomeLocal" style={{ color: '#000000'}}> Nome: </label> <br /> 
                 <input style={{background: '#fff'}} type="text" id="nomeLocal" name="nomeLocal" value={nomelocal} onChange={(e) => setNomeLocal(e.target.value)} required />
-              </form>  
-              <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
+                <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
                 <button  type="submit"  style={{ color: '#A4EA4F',  display: 'flex', alignItems: 'center', height: '25px'}}>
                   <MdOutlineSave/>
                 </button>
                 <button onClick={handleCloseModal} style={{ background: 'transparent', color: '#FF0000',  display: 'flex', alignItems: 'center', height: '25px', marginBottom: '10px'}}>
                   <IoMdCloseCircle/>
                 </button>
-              </div>
+                </div>
+              </form>  
             </div>
           </div>
         )}

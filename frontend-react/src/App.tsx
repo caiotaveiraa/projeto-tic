@@ -7,6 +7,7 @@ import LocalEstoque from './components/LocalEstoque'
 
 import './styles/global.css'
 import {Route, BrowserRouter as Router, Routes} from 'react-router-dom'
+import TiposProdutos from './components/TiposProdutos'
 
 function App() {
 
@@ -20,7 +21,7 @@ function App() {
           <Route path="/cadastros/*">
             <Route path="fornecedores" element={<Inicio />} />
             <Route path="unidades" element={<Inicio />} />
-            <Route path="tipos" element={<Inicio />} />
+            <Route path="tipos" element={<TiposProdutos />} />
             <Route path="produtos" element={<Produto />} />
             <Route path="composicoes" element={<Inicio />} />
             <Route path="locais" element={<LocalEstoque />} />
