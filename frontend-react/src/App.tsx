@@ -4,6 +4,7 @@ import Cadastrar from './components/Login/CadastrarUsuario'
 import Nfe from './components/Nfe'
 import Produto from './components/Produtos'
 import LocalEstoque from './components/LocalEstoque'
+import UnidadeMedida from './components/UnidadeMedida'
 
 import './styles/global.css'
 import {Route, BrowserRouter as Router, Routes} from 'react-router-dom'
@@ -20,7 +21,7 @@ function App() {
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/cadastros/*">
             <Route path="fornecedores" element={<Inicio />} />
-            <Route path="unidades" element={<Inicio />} />
+            <Route path="unidades" element={<UnidadeMedida />} />
             <Route path="tipos" element={<TiposProdutos />} />
             <Route path="produtos" element={<Produto />} />
             <Route path="composicoes" element={<Inicio />} />
