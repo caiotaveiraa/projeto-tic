@@ -64,7 +64,7 @@ function SubMenuRelatorios()
       <li>
         <Link to="/cadastros/fornecedores" className="flex items-center text-gray-700">
             <RiPagesLine size={5} />
-            <span className="mx-4 font-medium"> Relatorio 1 </span>
+            <span className="mx-4 font-medium"> Relatorio de Estoque </span>
         </Link>
       </li>
     </ul>

@@ -109,7 +109,6 @@ export default function LocalEstoque()  {
           }
       }
       try {
-        console.log(Local)
         // chamar a API para cadastrar o local
         const LocalCadastrado = await fetch(url, {
           method: verb,
@@ -165,7 +164,7 @@ export default function LocalEstoque()  {
               <span style={{ color: '#000000', fontWeight: 'bold'}}> Cadastro de Estoque </span> 
               <form onSubmit={handleSubmit}>
                 <label htmlFor="nomeLocal" style={{ color: '#000000'}}> Nome: </label> <br /> 
-                <input style={{background: '#fff'}} type="text" id="nomeLocal" name="nomeLocal" value={nomelocal} onChange={(e) => setNomeLocal(e.target.value)} required />
+                <input style={{background: '#fff', color:"#000"}} type="text" id="nomeLocal" name="nomeLocal" value={nomelocal} onChange={(e) => setNomeLocal(e.target.value)} required />
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
                 <button  type="submit"  style={{ color: '#A4EA4F',  display: 'flex', alignItems: 'center', height: '25px'}}>
                   <MdOutlineSave/>

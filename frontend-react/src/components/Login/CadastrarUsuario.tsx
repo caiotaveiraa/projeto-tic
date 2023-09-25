@@ -89,7 +89,9 @@ export default function CadastrarUsuario() {
                             <TextField label="Login" margin="normal" value={username} onChange={(e) => setUsername(e.target.value)} />
                             <TextField label="Senha" margin="normal" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                             <TextField label="Repita a Senha" margin="normal" type="password" value={passwordconfirm} onChange={(e) => setPasswordconfirm(e.target.value)} />
-                            <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} color="primary" />} label="Usuario administrador" />
+                            <FormControlLabel control={<Checkbox checked={checked} onChange={handleChange} color="primary" />}       label={
+        <span style={{ color: 'black' }}>Usuario administrador</span>
+      } />
                             <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 400, minWidth: 300, marginTop: 15}}>
                                 <Button type="submit" color="primary" variant="contained" onClick={handleLogin}>
                                     Entrar

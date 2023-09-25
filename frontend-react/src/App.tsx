@@ -8,6 +8,8 @@ import LocalEstoque from './components/LocalEstoque'
 import './styles/global.css'
 import {Route, BrowserRouter as Router, Routes} from 'react-router-dom'
 import TiposProdutos from './components/TiposProdutos'
+import Fornecedor from './components/Fornecedores'
+import Usuario from './components/Usuarios'
 
 function App() {
 
@@ -19,13 +21,13 @@ function App() {
           <Route path="/novousuario" element={<Cadastrar />} />
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/cadastros/*">
-            <Route path="fornecedores" element={<Inicio />} />
+            <Route path="fornecedores" element={<Fornecedor />} />
             <Route path="unidades" element={<Inicio />} />
             <Route path="tipos" element={<TiposProdutos />} />
             <Route path="produtos" element={<Produto />} />
             <Route path="composicoes" element={<Inicio />} />
             <Route path="locais" element={<LocalEstoque />} />
-            <Route path="usuarios" element={<Inicio />} />
+            <Route path="usuarios" element={<Usuario />} />
           </Route>
           <Route path="/nfe" element={<Nfe />} />
         </Routes>

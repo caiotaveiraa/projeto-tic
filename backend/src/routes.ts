@@ -14,45 +14,45 @@ export async function AppRoutes(server:FastifyInstance){
     server.post('/fornecedor/add', async (request) => {
         const postBody = z.object({
             nomefor: z.string(),
-            email: z.string(),
+            fisjur: z.string(),
             cnpjcpf: z.string(),
             telefone: z.string(),
-            fisjur: z.string(),
             cep: z.string(),
-            rua: z.string(),
             cidade: z.string(),
+            rua: z.string(),
             bairro: z.string(),
             numero: z.number(),
             complemento: z.string(),
+            email: z.string(),
         })
     
         const {
             nomefor,
-            email,
+            fisjur,
             cnpjcpf,
             telefone,
-            fisjur,
             cep,
-            rua,
             cidade,
+            rua,
             bairro,
             numero,
             complemento,
+            email,
         } = postBody.parse(request.body)
     
         const newForncedor = await prisma.tbfornecedores.create({
             data: {
                 nomefor,
-                email,
+                fisjur,
                 cnpjcpf,
                 telefone,
-                fisjur,
                 cep,
-                rua,
                 cidade,
+                rua,
                 bairro,
                 numero,
                 complemento,
+                email,
             },
         })
     
@@ -90,7 +90,7 @@ export async function AppRoutes(server:FastifyInstance){
             email,
         } = putBody.parse(request.body)
 
-        const fornecedorUpdated = await prisma.tbfornecedores.updateMany({
+        const fornecedorUpdated = await prisma.tbfornecedores.update({
             where: {
                 idfor: idfor,
             },
@@ -108,7 +108,7 @@ export async function AppRoutes(server:FastifyInstance){
                 email,
             },
         })
-        return (fornecedorUpdated.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+        return fornecedorUpdated ?  fornecedorUpdated :  {}
     })
 
     server.delete('/fornecedor/delete/:idfor', async (request) => {
@@ -172,7 +172,7 @@ export async function AppRoutes(server:FastifyInstance){
             nomeunidade
         } = putBody.parse(request.body)
 
-        const unidadeMedidaUpdate = await prisma.tbunidademedida.updateMany({
+        const unidadeMedidaUpdate = await prisma.tbunidademedida.update({
             where: {
                 idunidade: idunidade,
             },
@@ -181,7 +181,7 @@ export async function AppRoutes(server:FastifyInstance){
                 nomeunidade
             },
         })
-        return (unidadeMedidaUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+        return unidadeMedidaUpdate ?  unidadeMedidaUpdate :  {}
     })
 
     server.delete('/unidadeMedida/delete/:idunidade', async (request) => {
@@ -235,7 +235,7 @@ export async function AppRoutes(server:FastifyInstance){
     
         const {idtipprod,nometipprod} = putBody.parse(request.body)
 
-        const tipoProdutoUpdate = await prisma.tbtiposprodutos.updateMany({
+        const tipoProdutoUpdate = await prisma.tbtiposprodutos.update({
             where: {
                 idtipprod: idtipprod,
             },
@@ -243,7 +243,7 @@ export async function AppRoutes(server:FastifyInstance){
                 nometipprod
             },
         })
-        return (tipoProdutoUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+        return tipoProdutoUpdate ?  tipoProdutoUpdate :  {}
     })
 
     server.delete('/tiposProdutos/delete/:idtipprod', async (request) => {
@@ -263,10 +263,18 @@ export async function AppRoutes(server:FastifyInstance){
         return tipProdDeleted
     })
     
-    // Login
+    // Login / Usuarios
 
     server.get('/usuarios', async () => {        
-        const usuarios = await prisma.tbusuarios.findMany()
+        const usuarios = await prisma.tbusuarios.findMany({
+            select: {
+                idusuario: true,
+                usu_login: true,
+                nome: true,
+                usu_admin: true,
+                dtcriacao: true
+            },
+        })
     
         return usuarios
     })
@@ -314,6 +322,27 @@ export async function AppRoutes(server:FastifyInstance){
         })
     
         return newUsuario
+    })
+    
+
+    //deletar usuario
+
+    server.delete('/usuarios/delete/:userId', async (request) => {
+        const idParam = z.object({
+            userId: z.string(),
+        })
+
+        const { userId } = idParam.parse(request.params)
+
+        const idusuario = Number(userId)
+
+        const userDeleted = await prisma.tbusuarios.delete({
+            where: {
+                idusuario: idusuario,
+            },
+        })
+
+        return userDeleted
     })
 
     // server.post('/cadastro/verifica', async (request) => {
@@ -421,7 +450,7 @@ export async function AppRoutes(server:FastifyInstance){
           });    
 
         if(confereIdTipoProd && confereIdUnidade) {
-            const produtoUpdate = await prisma.tbprodutos.updateMany({
+            const produtoUpdate = await prisma.tbprodutos.update({
                 where: {
                     idproduto: idproduto,
                 },
@@ -432,7 +461,7 @@ export async function AppRoutes(server:FastifyInstance){
                     quantminima
                 },
             })
-            return (produtoUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return produtoUpdate ?  produtoUpdate :  {}
         }
         else {
             return(`Unidade de medida ou tipo de produto não encontrados!`)
@@ -593,18 +622,20 @@ export async function AppRoutes(server:FastifyInstance){
             });
                 
         if(confereProduto && confereLocal){
-            const estoqueUpdate = await prisma.tbestoque.updateMany({
+            const estoqueUpdate = await prisma.tbestoque.update({
                 where: {
-                    idestoque: idestoque,
+                    idestoque_idproduto: {
+                        idestoque: idestoque,
+                        idproduto: idproduto
+                    }
                 },
                 data: {
-                    idproduto,
                     idlocal,
                     quantidade,
                     dtinc
                 },
             })
-            return (estoqueUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return estoqueUpdate ?  estoqueUpdate :  {}
         }
         else{
             return(`Produto ou local de estoque não encontrados!`)
@@ -704,7 +735,7 @@ export async function AppRoutes(server:FastifyInstance){
             });
             
         if(conferefornecedor && confereuser) {
-            const movimentosUpdate = await prisma.tbmovimentos.updateMany({
+            const movimentosUpdate = await prisma.tbmovimentos.update({
                 where: {
                     idmovimento : idmovimento,
                 },
@@ -716,7 +747,7 @@ export async function AppRoutes(server:FastifyInstance){
                     dtinc
                 },
             })
-            return (movimentosUpdate.count >= 1) ?  'Atualização realizada com sucesso!' :  'Nada foi atualizado!'
+            return movimentosUpdate ?  movimentosUpdate :  {}
         }
         else {
             return(`Fornecedor ou usuário nao encontrados!`)
@@ -864,21 +895,21 @@ export async function AppRoutes(server:FastifyInstance){
           });
 
         if(confereLocal && confereProduto && confereMovimentoId){
-            const movimentosItensUpdate = await prisma.tbmovitens.updateMany({
+            const movimentosItensUpdate = await prisma.tbmovitens.update({
                 where: {
-                    seqitem: seqitem,
-                    idmovimento: idmovimento,
+                    idmovimento_seqitem_idproduto: {
+                        idmovimento: idmovimento,
+                        seqitem: seqitem,
+                        idproduto: idproduto
+                    }
                 },
                 data: {
-                    seqitem,
-                    idmovimento,
-                    idproduto,
                     idlocal,
                     dtinc,
                     quantidade                
                 },
             })
-            return (movimentosItensUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return movimentosItensUpdate ?  movimentosItensUpdate :  {}
         }
         else{
             return(`Local de estoque, produto ou movimento não encontrados!`)
@@ -1013,7 +1044,7 @@ export async function AppRoutes(server:FastifyInstance){
             });
         
         if(conferemovimento && confereuser && conferefornecedor){
-            const nfUpdate = await prisma.tbnf.updateMany({
+            const nfUpdate = await prisma.tbnf.update({
                 where: {
                     idnf: idnf
                 },
@@ -1027,7 +1058,7 @@ export async function AppRoutes(server:FastifyInstance){
                     vlrtotal
                 },
             })
-            return (nfUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return nfUpdate ?  nfUpdate :  {}
         }
         else{
             return(`Movimento, usuário ou fornecedor não encontrados!`)
@@ -1152,11 +1183,13 @@ export async function AppRoutes(server:FastifyInstance){
             });
         
         if(conferenf && conferemovimento && confereproduto){
-            const itemUpdate = await prisma.tbnfitens.updateMany({
+            const itemUpdate = await prisma.tbnfitens.update({
                 where: {
-                    idnf: idnf,
-                    seqitem: seqitem,
-                    idproduto: idproduto
+                    idnf_seqitem_idproduto: {
+                        idnf: idnf,
+                        seqitem: seqitem,
+                        idproduto: idproduto
+                    }
                 },
                 data: {
                     idmovimento,
@@ -1165,7 +1198,7 @@ export async function AppRoutes(server:FastifyInstance){
                     vlrtotitem
                 },
             })
-            return (itemUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return itemUpdate ?  itemUpdate :  {}
         }
         else{
             return(`Nota fiscal, movimento ou produto não encontrados!`)
@@ -1274,17 +1307,19 @@ export async function AppRoutes(server:FastifyInstance){
             });
         
         if(confereprodutos.length === produtos.length){
-            const compUpdate = await prisma.tbprodcomposicao.updateMany({
+            const compUpdate = await prisma.tbprodcomposicao.update({
                 where: {
-                    idcomp: idcomp,
-                    idproduto: idproduto,
-                    idprodutocomp: idprodutocomp
+                    idcomp_idproduto_idprodutocomp: {
+                        idcomp: idcomp,
+                        idproduto: idproduto,
+                        idprodutocomp: idprodutocomp
+                    }
                 },
                 data: {
                     quantidade
                 },
             })
-            return (compUpdate.count >= 1) ?  'Atualização com sucesso' :  'Nada foi atualizado'
+            return compUpdate ?  compUpdate :  {}
         }
         else{
             return(`Produtos não encontradosS!`)
