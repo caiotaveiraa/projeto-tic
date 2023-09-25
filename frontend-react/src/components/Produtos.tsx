@@ -101,19 +101,36 @@ export default function Produto()  {
 
     const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
       e.preventDefault() // evita que a página seja recarregada
-    
-    let Produto
-
-    Produto = {
-      nomeprod,
-      idtipprod,
-      idunidade,
-      quantminima
+      let Produto
+      let verb
+      let url
+      if(idproduto == 0){
+        //inserção de local
+        verb = `POST`
+        url = `http://localhost:3333/produtos/add`
+        Produto = {
+          nomeprod,
+          idtipprod,
+          idunidade,
+          quantminima
+          }
+      }
+      else{
+        //atualizacao de local
+        verb = `PUT`
+        url = `http://localhost:3333/produtos/update`
+        Produto = {
+          idproduto,
+          nomeprod,
+          idtipprod,
+          idunidade,
+          quantminima
+          }
       }
       try {
-        // chamar a API para cadastrar o local
-        const ProdutoCadastrado = await fetch(`http://localhost:3333/produtos/add`, {
-          method: 'POST',
+        // chamar a API para cadastrar o tipo
+        const ProdutoCadastrado = await fetch(url, {
+          method: verb,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -122,16 +139,24 @@ export default function Produto()  {
         .then( response => {
           return response.json()
         })
-        // atualiza a lista de local
-        // monta uma nova lista com a lista anterior + local cadastrado
-         
-        setProdutos([...produtos, ProdutoCadastrado])
+        if (idproduto == 0) { // insere
+          setProdutos([...produtos, ProdutoCadastrado])
+       }
+       else { // atualiza na lista o tipo alterado
+          setProdutos(produtos.map( (produto) => {
+            if (produto.idproduto === idproduto) {
+              return ProdutoCadastrado
+            }
+            else {
+              return produto
+            }
+          }))
+       }
       }
       catch(error) {
         console.log(error)
       }
-      
-      // Após o cadastro bem-sucedido, feche a modal.
+        // Após o cadastro bem-sucedido, feche a modal.
       setShowModal(false);
     }
 
@@ -144,7 +169,7 @@ export default function Produto()  {
       <div className="max-w-lg mx-10 my-5 mb-4 "> 
         {/* lista de Locais dentro de uma tabela */}
         <div style={{ background: "linear-gradient(to right, #40E0D0, #4682B4)"}}>
-          <h2 className="font-bold mb-4" style={{ color: '#000000'}}> Produtos </h2>
+          <h2 className="font-bold mb-4 px-7 py-2" style={{ color: '#000000'}}> Produtos </h2>
         </div>
         <button onClick={() => handleOpenModal()} style={{backgroundColor: '#A4EA4F', color: '#000000',  display: 'flex', alignItems: 'center', height: '25px', marginBottom: '10px'}} > 
           <HiOutlinePlusCircle size={15} style={{ color: '#000000', marginRight: '3px' }}/> <span style={{ fontSize: '10px'}}> Novo registro  </span>
@@ -158,13 +183,13 @@ export default function Produto()  {
               <span style={{ color: '#000000', fontWeight: 'bold'}}> Cadastro de Produto </span> 
               <form onSubmit={handleSubmit}>
               <label htmlFor="nomeproduto" style={{ color: '#000000'}}> Nome do Produto: </label> <br />
-                <input style={{background: '#fff'}} type="text" id="nomeproduto" name="nomeproduto" value={nomeprod} onChange={(e) => setNomeProd(e.target.value)} required /><br />
+                <input style={{background: '#fff', color:"#000"}} type="text" id="nomeproduto" name="nomeproduto" value={nomeprod} onChange={(e) => setNomeProd(e.target.value)} required /><br />
                 <label htmlFor="idtipprod" style={{ color: '#000000'}}> Id Tipo de Produto: </label> <br />
-                <input style={{background: '#fff'}} type="number" id="idtipprod" name="idtipprod" value={idtipprod} onChange={(e) => setIdTipProd(Number(e.target.value))} required /><br />
+                <input style={{background: '#fff', color:"#000"}} type="number" id="idtipprod" name="idtipprod" value={idtipprod} onChange={(e) => setIdTipProd(Number(e.target.value))} required /><br />
                 <label htmlFor="idunidade" style={{ color: '#000000'}}> Id Unidade de Medida: </label> <br />
-                <input style={{background: '#fff'}} type="number" id="idunidade" name="idunidade" value={idunidade} onChange={(e) => setIdUnidade(Number(e.target.value))} required /><br />
+                <input style={{background: '#fff', color:"#000"}} type="number" id="idunidade" name="idunidade" value={idunidade} onChange={(e) => setIdUnidade(Number(e.target.value))} required /><br />
                 <label htmlFor="quantminima" style={{ color: '#000000'}}> Quantidade Minima: </label> <br />
-                <input style={{background: '#fff'}} type="number" id="quantminima" name="quantminima" value={quantminima} onChange={(e) => setQuantMinima(Number(e.target.value))} required /><br />
+                <input style={{background: '#fff', color:"#000"}} type="number" id="quantminima" name="quantminima" value={quantminima} onChange={(e) => setQuantMinima(Number(e.target.value))} required /><br />
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
                 <button  type="submit"  style={{ color: '#A4EA4F',  display: 'flex', alignItems: 'center', height: '25px'}}>
                   <MdOutlineSave/>
@@ -182,21 +207,21 @@ export default function Produto()  {
           <thead>
             <tr className="bg-transparent">
               <th className=" px-4 py-2 text-black">Código</th>
-              <th className=" px- py-2  text-black" >Nome</th>
-              <th className=" px- py-2  text-black" >Quantidade Mínima</th>
-              <th className=" px- py-2  text-black" >Tipo de Produto</th>
-              <th className=" px- py-2  text-black" >Unidade de Medida</th>
+              <th className=" px-7 py-2  text-black" >Nome</th>
+              <th className=" px-7 py-2  text-black truncate" >Quantidade Mínima</th>
+              <th className=" px-7 py-2  text-black truncate" >Tipo de Produto</th>
+              <th className=" px-7 py-2  text-black truncate" >Unidade de Medida</th>
             </tr>
           </thead>
           <tbody>
             {
               produtos.map( (Produto) => (
                 <tr key={Produto.idproduto}>
-                  <td className="border border-gray-300 px-4 py-2 text-black "  >{Produto.idproduto}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-black "  >{Produto.nomeprod}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-black "  >{Produto.quantminima}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-black "  >{Produto.idtipprod}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-black "  >{Produto.idunidade}</td>
+                  <td className="border border-gray-300 px-8 py-2 text-black text-center"  >{Produto.idproduto}</td>
+                  <td className="border border-gray-300 px-8 py-2 text-black truncate text-center"  >{Produto.nomeprod}</td>
+                  <td className="border border-gray-300 px-8 py-2 text-black text-center "  >{Produto.quantminima}</td>
+                  <td className="border border-gray-300 px-8 py-2 text-black text-center"  >{Produto.idtipprod}</td>
+                  <td className="border border-gray-300 px-8 py-2 text-black text-center"  >{Produto.idunidade}</td>
                   <td className="border border-gray-300">
                       <button onClick={() => handleEdit(Produto)} style={{backgroundColor: 'transparent'}} > 
                         <MdOutlineEdit size={20} style={{ color: '#1E90FF'}}/>

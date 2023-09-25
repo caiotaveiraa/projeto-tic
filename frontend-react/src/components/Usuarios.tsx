@@ -7,12 +7,15 @@ import {IoMdCloseCircle} from 'react-icons/io'
 import Menu from './Menu';
 
 
-interface tiposProdutosProps { // tipo de dado
-  idtipprod: number,
-  nometipprod: string,
+interface usuariosProps { // tipo de dado
+  idusuario: number,
+  usu_login: string,
+  nome: string,
+  usu_admin: boolean
+  dtcriacao: string
 }
 
-export default function TiposProdutos()  {
+export default function Usuario()  {
 
   // esta variável vai conter o username passado na navegação
   const location = useLocation();
@@ -21,21 +24,24 @@ export default function TiposProdutos()  {
 
   
   // vetor de locais
-  const [tipos, setTipos] = useState<tiposProdutosProps[]>([])
+  const [usuarios, setUsuarios] = useState<usuariosProps[]>([])
 
   // variáveis de estado para os campos do formulário
   const [showModal, setShowModal] = useState(false);
-  const [nometipprod, setNomeTipProd] = useState('');
-  const [idtipprod, setIdTipProd] = useState(0)
+  const [idusuario, setIdUsuario] = useState(0);
+  const [usu_login, setUsuLogin] = useState('');
+  const [nome, setNome] = useState('');
+  const [usu_admin, setUsuAdmin] = useState(false);
+  const [dtcriacao, setDtCriacao] = useState('');
 
-  // fazer o hook useEffect para carregar os Tipos de produto da API (GET)
+  // fazer o hook useEffect para carregar os locais da API
     useEffect( () => {
-    const buscaTipos = async () => {
+    const buscaUsuarios = async () => {
       try {
-        const resp = await fetch(`http://localhost:3333/tiposProdutos`)
+        const resp = await fetch(`http://localhost:3333/usuarios`)
         const retorno = await resp.json()
         if (resp.ok){
-          setTipos(retorno) // atualiza vetor de produtos com dados da API
+          setUsuarios(retorno) // atualiza vetor de produtos com dados da API
         }
         else {
           console.log('Falha na busca por dados')
@@ -45,15 +51,15 @@ export default function TiposProdutos()  {
         console.log(error)
       }
     }
-    buscaTipos()
+    buscaUsuarios()
   } , [username])
 
-    // função para remover um tipo de produto pela tela
+    // função para remover um local de estoque pela tela
     const handleRemove = async (id: number) => {
-      let confirma = confirm('Deseja remover esse tipo de produto?')
+      let confirma = confirm('Deseja remover esse usuario?')
       if (confirma) {
-        // requisição DELETE para remover um tipo através da API - é passado o id na url
-        await fetch(`http://localhost:3333/tiposProdutos/delete/${id}`, {
+        // requisição DELETE para remover um produto através da API
+        await fetch(`http://localhost:3333/usuarios/delete/${id}`, {
           method: 'DELETE'
         })
         .then( response => {
@@ -62,22 +68,28 @@ export default function TiposProdutos()  {
         .catch(error => {
             alert(error)
         })
-        // atualiza a lista dos locais - removendo o tipo
-        // SetLocais vai receber como parâmetro a lista de tipo atual após delete
+        // atualiza a lista dos locais - removendo o local deletado
+        // SetLocais vai receber como parâmetro a lista de locais atual após delete
         // retirando o local que foi removido
-        setTipos(tipos.filter( (Tipo) => Tipo.idtipprod !== id ))
+        setUsuarios(usuarios.filter( (Usuario) => Usuario.idusuario !== id ))
       }
     }
 
-    const handleEdit = (Tipo: tiposProdutosProps) => {
+    const handleEdit = (Usuario: usuariosProps) => {
       setShowModal(true)
-      setNomeTipProd(Tipo.nometipprod)
-      setIdTipProd(Tipo.idtipprod) // usado para eu filtrar se é uma criação ou edição do tipo
+      setIdUsuario(Usuario.idusuario) // usado para eu filtrar se é uma criação ou edição do local
+      setUsuLogin(Usuario.usu_login)
+      setNome(Usuario.nome)
+      setUsuAdmin(Usuario.usu_admin)
+      setDtCriacao(Usuario.dtcriacao)
     }
 
     const handleOpenModal = () => {
-        setIdTipProd(0)
-        setNomeTipProd('')
+        setIdUsuario(0)
+        setUsuLogin('')
+        setNome('')
+        setUsuAdmin(false)
+        setDtCriacao('')
         setShowModal(true);
     }
   
@@ -87,13 +99,13 @@ export default function TiposProdutos()  {
 
     const handleSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
       e.preventDefault() // evita que a página seja recarregada
-      let Tipo
+      let Usuario
       let verb
       let url
-      if(idtipprod == 0){
+      if(idusuario == 0){
         //inserção de local
         verb = `POST`
-        url = `http://localhost:3333/tiposProdutos/add`
+        url = `http://localhost:3333/usuarios/add`
         Tipo = {
           nometipprod
           }
@@ -163,7 +175,7 @@ export default function TiposProdutos()  {
               <span style={{ color: '#000000', fontWeight: 'bold'}}> Cadastro de Tipos de Produtos </span> 
               <form onSubmit={handleSubmit}>
                 <label htmlFor="nometipo" style={{ color: '#000000'}}> Nome: </label> <br /> 
-                <input style={{background: '#fff', color:"#000"}} type="text" id="nometipo" name="nometipo" value={nometipprod} onChange={(e) => setNomeTipProd(e.target.value)} required />
+                <input style={{background: '#fff'}} type="text" id="nometipo" name="nometipo" value={nometipprod} onChange={(e) => setNomeTipProd(e.target.value)} required />
                 <div className="form-group" style={{ display: 'flex', justifyContent: 'flex-end', gap: '2px', marginTop: '10px' }}>
                     <button  type="submit"  style={{ color: '#A4EA4F',  display: 'flex', alignItems: 'center', height: '25px'}}>
                     <MdOutlineSave/>
