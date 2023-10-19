@@ -11,31 +11,24 @@ export default function Login() {
     const navigate = useNavigate()
 
     const handleLogin = async () => {
-
-        const resp = await fetch(`http://localhost:3333/usuario/${username}`, {
-            method: 'GET',
-        })        
-
-        .then (resposta => {
-            return resposta.json()
-        })
-
-        if (resp === null || resp === undefined) {
-            Swal.fire({
-                title: 'Erro',
-                text: 'Usuário ou senha estão incorretos',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            })
-        } else {
-            if (resp.senha !== password) {
-                Swal.fire({
-                    title: 'Erro',
-                    text: 'Usuário ou senha estão incorretos',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                })
-            } else {
+        const loginData = {
+            usu_login: username,
+            senha: password
+        };
+    
+        try {
+            const response = await fetch('http://localhost:3333/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(loginData)
+            });
+    
+            const data = await response.json();
+            console.log(data)
+    
+            if (data.success) {
                 Swal.fire({
                     title: 'Sucesso',
                     icon: 'success',
@@ -45,9 +38,24 @@ export default function Login() {
                         navigate('/inicio', { state: { username: username } });
                     }
                 });
+            } else {
+                Swal.fire({
+                    title: 'Erro',
+                    text: data.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
             }
+        } catch (error) {
+            console.error('Erro:', error);
+            Swal.fire({
+                title: 'Erro',
+                text: 'Erro de rede ou interno do servidor',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
-    }
+    };
 
     return (
         <div>               

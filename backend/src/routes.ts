@@ -265,6 +265,32 @@ export async function AppRoutes(server:FastifyInstance){
     
     // Login / Usuarios
 
+    server.post('/login', async (request) => {
+        const postBody = z.object({
+            usu_login: z.string(),
+            senha: z.string(),
+        })
+    
+        try {
+            const { usu_login, senha } = postBody.parse(request.body)
+    
+            const usuario = await prisma.tbusuarios.findUnique({
+                where: {
+                    usu_login: usu_login
+                },
+            })
+    
+            if (usuario && usuario.senha === senha) {
+                return { success: true, message: 'Login bem-sucedido' };
+            } else {
+                return { success: false, message: 'Credenciais inválidas' };
+            }
+        } catch (error) {
+            // Lidar com erros de validação de entrada
+            return { success: false, message: 'Erro de validação' };
+        }
+    })
+
     server.get('/usuarios', async () => {        
         const usuarios = await prisma.tbusuarios.findMany({
             select: {
@@ -277,21 +303,6 @@ export async function AppRoutes(server:FastifyInstance){
         })
     
         return usuarios
-    })
-
-    server.get('/usuario/:usu_login', async (request) => {
-
-        const idParam = z.object({
-            usu_login: z.string(),
-        })
-
-        const { usu_login } = idParam.parse(request.params)
-
-        const usuario = await prisma.tbusuarios.findUnique({
-            where: { usu_login: usu_login },
-        });
-        
-        return usuario
     })
 
     server.post('/usuario/add', async (request) => {
@@ -343,35 +354,6 @@ export async function AppRoutes(server:FastifyInstance){
         })
 
         return userDeleted
-    })
-
-    // server.post('/cadastro/verifica', async (request) => {
-    //     const verificaBody = z.object({
-    //         usu_login: z.string(),
-    //     })
-
-    //     const {usu_login} = verificaBody.parse(request.body)
-    //     const result = await prisma.tbusuarios.findFirst({
-    //         where: {
-    //             usu_login
-    //         }
-    //     })
-    //     return result // retorna null se não encontrar e o objeto se encontra
-    // })
-
-    server.post('/usuario/verifica', async (request) => {
-        const verificaBody = z.object({
-            usu_login: z.string(),
-            senha: z.string()
-        })
-        const {usu_login, senha} = verificaBody.parse(request.body)
-        const result = await prisma.tbusuarios.findFirst({
-            where: {
-                usu_login,
-                senha
-            }
-        })
-        return result // retorna null se não encontrar e o objeto se encontra
     })
 
 
