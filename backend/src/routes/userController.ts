@@ -43,7 +43,7 @@ export async function userController(server: FastifyInstance) {
         return usuarios
     })
 
-    server.post('/usuario/add', async (request) => {
+    server.post('/register', async (request) => {
         const postBody = z.object({
             usu_login: z.string(),
             nome: z.string(),
