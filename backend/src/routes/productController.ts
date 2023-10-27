@@ -6,8 +6,20 @@ export async function productController(server: FastifyInstance) {
      //CRUD - Produtos (Conectada a outras entidades)
 
      server.get('/produtos', async () => {
-        const produtos = await prisma.tbprodutos.findMany()
-
+        const produtos = await prisma.tbprodutos.findMany({
+            include: {
+                tbunidademedida: {
+                    select: {
+                        siglaun: true
+                    }
+                },
+                tbtiposprodutos: {
+                    select: {
+                        nometipprod: true
+                    }
+                }
+            }
+        })
         return produtos
     })
 

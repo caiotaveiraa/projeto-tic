@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
+import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
@@ -24,6 +27,17 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 export default function UserPage() {
   const [page, setPage] = useState(0);
 
@@ -39,6 +53,12 @@ export default function UserPage() {
 
   const [produtosArray, setProdutosArray] = useState([]);
   const [produtosCarregados, setProdutosCarregados] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const [username, setUsername] = useState('')
 
   async function obterProdutos() {
     try {
@@ -115,10 +135,24 @@ export default function UserPage() {
 
   return (
     <Container>
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <TextField 
+            name="email" label="Usuário" 
+            value={username}  // Atribua o valor do estado 'username' ao campo de texto
+            onChange={(e) => setUsername(e.target.value)}  // Atualize o estado 'username' quando o campo de texto for alterado
+          />
+        </Box>
+      </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Produtos</Typography>
 
-        <Button variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button onClick={handleOpen} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           Novo produto
         </Button>
       </Stack>
@@ -143,9 +177,9 @@ export default function UserPage() {
                 headLabel={[
                   { id: 'id', label: 'Id' },
                   { id: 'nome', label: 'Nome' },
-                  { id: 'idtipprod', label: 'Id Tipo de Produto' },
-                  { id: 'idunidade', label: 'Id Unidade de Medida' },
+                  { id: 'idtipprod', label: 'Tipo de Produto' },
                   { id: 'quantminima', label: 'Quantidade Minima'},
+                  { id: 'idunidade', label: 'Unidade de Medida' },
                   { id: '' },
                 ]}
               />
@@ -157,9 +191,9 @@ export default function UserPage() {
                       key={row.idproduto}
                       idproduto={row.idproduto}
                       nomeprod={row.nomeprod}
-                      idtipprod={row.idtipprod}
-                      idunidade={row.idunidade}
+                      idtipprod={row.tbtiposprodutos.nometipprod}
                       quantminima={row.quantminima}
+                      idunidade={row.tbunidademedida.siglaun}
                       selected={selected.indexOf(row.nomeprod) !== -1}
                       handleClick={(event) => handleClick(event, row.nomeprod)}
                     />
