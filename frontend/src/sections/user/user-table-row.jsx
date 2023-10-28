@@ -25,6 +25,7 @@ export default function UserTableRow({
   handleClick,
   idproduto,
   onDeleteProduct,
+  onEditProduct,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -47,6 +48,11 @@ export default function UserTableRow({
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
+    handleCloseMenu()
+  }
+  const handleEditProduct = async (id) => {
+    console.log(id)
+    onEditProduct(idproduto)
     handleCloseMenu()
   }
 
@@ -90,7 +96,7 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
         >
-        <MenuItem onClick={handleCloseMenu}>
+        <MenuItem onClick={() => handleEditProduct(idproduto)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Editar
         </MenuItem>
@@ -113,4 +119,5 @@ UserTableRow.propTypes = {
   idunidade: PropTypes.any,
   selected: PropTypes.any,
   onDeleteProduct: PropTypes.func,
+  onEditProduct: PropTypes.func,
 };

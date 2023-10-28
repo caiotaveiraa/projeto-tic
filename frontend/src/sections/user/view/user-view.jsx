@@ -59,6 +59,7 @@ export default function UserPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const [idproduto, setIdProduto] = useState(0)
   const [nomeprod, setnomeprod] = useState('')
   const [idtipprod, setIdTIpProd] = useState(0)
   const [idunidade, setIdUnidade] = useState(0)
@@ -130,22 +131,50 @@ export default function UserPage() {
   };
 
   const handleDeleteProduct = (id) => {
+    console.log('Entrou')
     // Atualize o estado excluindo o produto com o ID correspondente
     setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+  }
+  const handleEditProduct = (id) => {
+    console.log('Entrou')
+    const produtoEditado = produtosArray.find(item => item.idproduto === id)
+    setIdProduto(produtoEditado.idproduto)
+    setnomeprod(produtoEditado.nomeprod)
+    setIdTIpProd(produtoEditado.idtipprod)
+    setIdUnidade(produtoEditado.idunidade)
+    setQuantMinima(produtoEditado.quantminima)
+    setOpen(true)
   }
 
     const handleCreate = async (e) => {
       e.preventDefault(); // Impede o comportamento padrão de envio do formulário
-      const formData = {
+      const isInsercao = idproduto === 0
+      let formData
+      if(isInsercao) // insercao
+      {
+        formData = {
         nomeprod,
         idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
         idunidade: parseInt(idunidade, 10), // Converte para inteiro
-        quantminima: parseFloat(quantminima), // Converte para ponto flutuante
-      };
+        quantminima: parseFloat(quantminima),
+        }
+      }
+      else // Atualizacao
+      {
+        formData = {
+          idproduto,
+          nomeprod,
+          idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
+          idunidade: parseInt(idunidade, 10), // Converte para inteiro
+          quantminima: parseFloat(quantminima),
+        }
+      }
+      console.log('Criando')
       console.log(formData)
+      console.log(idproduto)
       const produtonovo = JSON.stringify(formData)
       try {
-        const resp = await novoProduto(produtonovo);
+        const resp = await novoProduto(produtonovo, isInsercao);
         setProdutosArray([...produtosArray, resp]);
         obterProdutos();
         setnomeprod('');
@@ -179,7 +208,7 @@ export default function UserPage() {
           <form onSubmit={handleCreate}>
             <TextField 
               name="name" label="Nome" 
-              value={nomeprod}  
+              value={nomeprod}
               onChange={(e) => setnomeprod(e.target.value)}
               sx={{ marginBottom: 2 }}
             />
@@ -232,7 +261,7 @@ export default function UserPage() {
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Produtos</Typography>
 
-        <Button onClick={handleOpen} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button onClick={() => { handleOpen(); setIdProduto(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           Novo produto
         </Button>
       </Stack>
@@ -277,6 +306,7 @@ export default function UserPage() {
                       selected={selected.indexOf(row.nomeprod) !== -1}
                       handleClick={(event) => handleClick(event, row.nomeprod)}
                       onDeleteProduct={handleDeleteProduct}
+                      onEditProduct={handleEditProduct}
                     />
                   ))}
 

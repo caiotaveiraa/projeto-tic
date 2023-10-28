@@ -30,10 +30,22 @@ export const buscaProdutos = async () => {
     }
   };
 
-  export const novoProduto = async (dados) => {
+  export const novoProduto = async (dados, insercao) => {
+    let verbo
+    let url
+    if(insercao)
+    {
+      verbo = 'POST'
+      url = 'http://localhost:3333/produtos/add'
+    }
+    else
+    {
+      verbo = 'PUT'
+      url = 'http://localhost:3333/produtos/update'
+    }
     try {
-      const resp = await fetch('http://localhost:3333/produtos/add', {
-        method: 'POST',
+      const resp = await fetch(url, {
+        method: verbo,
         headers: {
           'Content-Type': 'application/json',
         },
