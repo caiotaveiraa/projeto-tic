@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { buscaProdutos } from 'src/api/produtos';
+import { novoProduto, buscaProdutos } from 'src/api/produtos';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -25,6 +25,7 @@ import TableEmptyRows from '../table-empty-rows';
 import UserTableToolbar from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
+
 // ----------------------------------------------------------------------
 
 const style = {
@@ -33,8 +34,8 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
+  bgcolor: '#f7f7fa', // Defina a cor de fundo como cinza (substitua 'gray' pela cor desejada)
+  borderRadius: '8px', // Defina o raio das bordas para torná-las arredondadas
   boxShadow: 24,
   p: 4,
 };
@@ -58,7 +59,10 @@ export default function UserPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [username, setUsername] = useState('')
+  const [nomeprod, setnomeprod] = useState('')
+  const [idtipprod, setIdTIpProd] = useState(0)
+  const [idunidade, setIdUnidade] = useState(0)
+  const [quantminima, setQuantMinima] = useState(0)
 
   async function obterProdutos() {
     try {
@@ -125,6 +129,36 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
+  const handleDeleteProduct = (id) => {
+    // Atualize o estado excluindo o produto com o ID correspondente
+    setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+  }
+
+    const handleCreate = async (e) => {
+      e.preventDefault(); // Impede o comportamento padrão de envio do formulário
+      const formData = {
+        nomeprod,
+        idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
+        idunidade: parseInt(idunidade, 10), // Converte para inteiro
+        quantminima: parseFloat(quantminima), // Converte para ponto flutuante
+      };
+      console.log(formData)
+      const produtonovo = JSON.stringify(formData)
+      try {
+        const resp = await novoProduto(produtonovo);
+        setProdutosArray([...produtosArray, resp]);
+        obterProdutos();
+        setnomeprod('');
+        setIdTIpProd(0);
+        setIdUnidade(0);
+        setQuantMinima(0);
+      } catch (erro) {
+        console.error("Ocorreu um erro:", erro);
+      }
+      handleClose()
+      console.log(produtosArray)
+  }
+
   const dataFiltered = applyFilter({
     inputData: produtosArray,
     comparator: getComparator(order, orderBy),
@@ -142,11 +176,57 @@ export default function UserPage() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <TextField 
-            name="email" label="Usuário" 
-            value={username}  // Atribua o valor do estado 'username' ao campo de texto
-            onChange={(e) => setUsername(e.target.value)}  // Atualize o estado 'username' quando o campo de texto for alterado
-          />
+          <form onSubmit={handleCreate}>
+            <TextField 
+              name="name" label="Nome" 
+              value={nomeprod}  
+              onChange={(e) => setnomeprod(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField 
+              name="idtipprod" label="Id do tipo de produto" 
+              value={idtipprod}
+              onChange={(e) => setIdTIpProd(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField 
+              name="idunidade" label="Id da Unidade de Medida" 
+              value={idunidade}
+              onChange={(e) => setIdUnidade(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <TextField 
+              type='number'
+              name="quantminima" label="Quantidade minima" 
+              value={quantminima}
+              onChange={(e) => setQuantMinima(e.target.value)}
+              sx={{ marginBottom: 2 }}
+            />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                marginTop: 2, // Adiciona margem na parte superior dos botões
+              }}
+            >
+              <Button 
+                onClick={handleClose} 
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:cancel" />}
+                sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
+                Cancelar
+              </Button>
+              <Button 
+                type='submit'
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:save" />}
+                sx={{ backgroundColor: '#98FB98', color: 'black' }}>
+                Salvar
+              </Button>
+          </Box>
+          </form>
         </Box>
       </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
@@ -192,10 +272,11 @@ export default function UserPage() {
                       idproduto={row.idproduto}
                       nomeprod={row.nomeprod}
                       idtipprod={row.tbtiposprodutos.nometipprod}
-                      quantminima={row.quantminima}
                       idunidade={row.tbunidademedida.siglaun}
+                      quantminima={row.quantminima}
                       selected={selected.indexOf(row.nomeprod) !== -1}
                       handleClick={(event) => handleClick(event, row.nomeprod)}
+                      onDeleteProduct={handleDeleteProduct}
                     />
                   ))}
 

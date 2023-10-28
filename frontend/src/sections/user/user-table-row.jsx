@@ -10,9 +10,9 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import Iconify from 'src/components/iconify';
+import { deletaProdutos } from 'src/api/produtos';
 
-// import { deletaProdutos } from 'src/api/produtos';
+import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -23,7 +23,8 @@ export default function UserTableRow({
   idunidade,
   quantminima,
   handleClick,
-  idproduto
+  idproduto,
+  onDeleteProduct,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -35,10 +36,18 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleDeleteProduct = () => {
-    console.log(`Clicou`)
+  const handleDeleteProduct = async (id) => {
+    try {
+      const resp = await deletaProdutos(id)
+      if(resp)
+      {
+        console.log(resp)
+        onDeleteProduct(idproduto);
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
     handleCloseMenu()
-
   }
 
   return (
@@ -58,11 +67,11 @@ export default function UserTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell>{idtipprod}</TableCell>
+        <TableCell align='justify'>{idtipprod}</TableCell>
 
-        <TableCell>{idunidade}</TableCell>
+        <TableCell align='justify'>{quantminima}</TableCell>
 
-        <TableCell>{quantminima}</TableCell>
+        <TableCell align='justify'>{idunidade}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -86,7 +95,7 @@ export default function UserTableRow({
           Editar
         </MenuItem>
 
-        <MenuItem onClick={handleDeleteProduct} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleDeleteProduct(idproduto)} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Deletar
         </MenuItem>
@@ -103,4 +112,5 @@ UserTableRow.propTypes = {
   idtipprod: PropTypes.any,
   idunidade: PropTypes.any,
   selected: PropTypes.any,
+  onDeleteProduct: PropTypes.func,
 };
