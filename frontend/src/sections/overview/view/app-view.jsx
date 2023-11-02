@@ -1,35 +1,71 @@
 import { faker } from '@faker-js/faker';
+import { useState, useEffect } from 'react';
 
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import Iconify from 'src/components/iconify';
+import { getNomeUsuario } from 'src/api/nomeusuario';
+import { quantidadenf, quantidadeTipos, quantidadeProdutos, quantidadeMovimentos } from 'src/api/dashboard';
 
-import AppTasks from '../app-tasks';
 import AppNewsUpdate from '../app-news-update';
 import AppOrderTimeline from '../app-order-timeline';
 import AppCurrentVisits from '../app-current-visits';
-import AppWebsiteVisits from '../app-website-visits';
 import AppWidgetSummary from '../app-widget-summary';
-import AppTrafficBySite from '../app-traffic-by-site';
-import AppCurrentSubject from '../app-current-subject';
 import AppConversionRates from '../app-conversion-rates';
 
 // ----------------------------------------------------------------------
 
 export default function AppView() {
+  const [infoCarregadas, setInfoCarregadas] = useState(false)
+  const [quantProdutos, setQuantProdutos] = useState(0)
+  const [quantNf, setQuantNf] = useState(0)
+  const [quantMovimentos, setQuantMovimentos] = useState(0)
+  const [quantTipos, setQuantTipos] = useState([]);
+  const account = getNomeUsuario()
+
+  async function carregarInformacoes() {
+    try {
+      const produtos = await quantidadeProdutos();
+      setQuantProdutos(produtos)
+      const nf = await quantidadenf()
+      setQuantNf(nf)
+      const movimentos = await quantidadeMovimentos()
+      setQuantMovimentos(movimentos)
+      const tipos = await quantidadeTipos();
+      setQuantTipos(tipos)
+      setInfoCarregadas(true);
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
+  }
+
+  useEffect(() => {
+    if (!infoCarregadas) {
+      carregarInformacoes();
+    }
+  }, [infoCarregadas]);
+
+  // FILTRA OS TIPOS DE PRODUTOS QUE TEM QUANTIDADE 0 PARA NAO APARECEREM NO GRAFICO
+  const tiposProdutosFiltrados = quantTipos.filter((tipoProduto) => tipoProduto.quantidade > 0);
+
+  // CRIA O VETOR QUE TERÁ OS DADOS DE QUANTIDADES POR TIPOS DE PRODUTOS
+  const chartData = tiposProdutosFiltrados.map((tipoProduto) => ({
+    label: tipoProduto.nometipprod,
+    value: tipoProduto.quantidade,
+  }));
+
   return (
     <Container maxWidth="xl">
       <Typography variant="h4" sx={{ mb: 5 }}>
-        Hi, Welcome back 👋
+        Olá, {account.displayName}
       </Typography>
 
       <Grid container spacing={3}>
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Weekly Sales"
-            total={714000}
+            title="Movimentações"
+            total={quantMovimentos}
             color="success"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_bag.png" />}
           />
@@ -37,8 +73,8 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="New Users"
-            total={1352831}
+            title="NFs Cadstradas"
+            total={quantNf}
             color="info"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_users.png" />}
           />
@@ -46,8 +82,8 @@ export default function AppView() {
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Item Orders"
-            total={1723315}
+            title="Produtos"
+            total={quantProdutos}
             color="warning"
             icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
           />
@@ -62,58 +98,11 @@ export default function AppView() {
           />
         </Grid>
 
-        <Grid xs={12} md={6} lg={8}>
-          <AppWebsiteVisits
-            title="Website Visits"
-            subheader="(+43%) than last year"
-            chart={{
-              labels: [
-                '01/01/2003',
-                '02/01/2003',
-                '03/01/2003',
-                '04/01/2003',
-                '05/01/2003',
-                '06/01/2003',
-                '07/01/2003',
-                '08/01/2003',
-                '09/01/2003',
-                '10/01/2003',
-                '11/01/2003',
-              ],
-              series: [
-                {
-                  name: 'Team A',
-                  type: 'column',
-                  fill: 'solid',
-                  data: [23, 11, 22, 27, 13, 22, 37, 21, 44, 22, 30],
-                },
-                {
-                  name: 'Team B',
-                  type: 'area',
-                  fill: 'gradient',
-                  data: [44, 55, 41, 67, 22, 43, 21, 41, 56, 27, 43],
-                },
-                {
-                  name: 'Team C',
-                  type: 'line',
-                  fill: 'solid',
-                  data: [30, 25, 36, 30, 45, 35, 64, 52, 59, 36, 39],
-                },
-              ],
-            }}
-          />
-        </Grid>
-
         <Grid xs={12} md={6} lg={4}>
           <AppCurrentVisits
-            title="Current Visits"
+            title="Tipos de Produtos"
             chart={{
-              series: [
-                { label: 'America', value: 4344 },
-                { label: 'Asia', value: 5435 },
-                { label: 'Europe', value: 1443 },
-                { label: 'Africa', value: 4443 },
-              ],
+              series: chartData,
             }}
           />
         </Grid>
@@ -134,20 +123,6 @@ export default function AppView() {
                 { label: 'Netherlands', value: 1100 },
                 { label: 'United States', value: 1200 },
                 { label: 'United Kingdom', value: 1380 },
-              ],
-            }}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppCurrentSubject
-            title="Current Subject"
-            chart={{
-              categories: ['English', 'History', 'Physics', 'Geography', 'Chinese', 'Math'],
-              series: [
-                { name: 'Series 1', data: [80, 50, 30, 40, 100, 20] },
-                { name: 'Series 2', data: [20, 30, 40, 80, 20, 80] },
-                { name: 'Series 3', data: [44, 76, 78, 13, 43, 10] },
               ],
             }}
           />
@@ -181,47 +156,6 @@ export default function AppView() {
               type: `order${index + 1}`,
               time: faker.date.past(),
             }))}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={4}>
-          <AppTrafficBySite
-            title="Traffic by Site"
-            list={[
-              {
-                name: 'FaceBook',
-                value: 323234,
-                icon: <Iconify icon="eva:facebook-fill" color="#1877F2" width={32} />,
-              },
-              {
-                name: 'Google',
-                value: 341212,
-                icon: <Iconify icon="eva:google-fill" color="#DF3E30" width={32} />,
-              },
-              {
-                name: 'Linkedin',
-                value: 411213,
-                icon: <Iconify icon="eva:linkedin-fill" color="#006097" width={32} />,
-              },
-              {
-                name: 'Twitter',
-                value: 443232,
-                icon: <Iconify icon="eva:twitter-fill" color="#1C9CEA" width={32} />,
-              },
-            ]}
-          />
-        </Grid>
-
-        <Grid xs={12} md={6} lg={8}>
-          <AppTasks
-            title="Tasks"
-            list={[
-              { id: '1', name: 'Create FireStone Logo' },
-              { id: '2', name: 'Add SCSS and JS files if required' },
-              { id: '3', name: 'Stakeholder Meeting' },
-              { id: '4', name: 'Scoping & Estimations' },
-              { id: '5', name: 'Sprint Showcase' },
-            ]}
           />
         </Grid>
       </Grid>

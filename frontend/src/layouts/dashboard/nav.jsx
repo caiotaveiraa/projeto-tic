@@ -14,7 +14,7 @@ import { RouterLink } from 'src/routes/components';
 
 import { useResponsive } from 'src/hooks/use-responsive';
 
-import { account } from 'src/_mock/account';
+import { getNomeUsuario } from 'src/api/nomeusuario';
 
 import Logo from 'src/components/logo';
 import Scrollbar from 'src/components/scrollbar';
@@ -25,6 +25,7 @@ import navConfig from './config-navigation';
 // ----------------------------------------------------------------------
 
 export default function Nav({ openNav, onCloseNav }) {
+  const account = getNomeUsuario()
   const pathname = usePathname();
 
   const upLg = useResponsive('up', 'lg');

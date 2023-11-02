@@ -9,7 +9,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { account } from 'src/_mock/account';
+import { getNomeUsuario } from 'src/api/nomeusuario';
 
 // ----------------------------------------------------------------------
 
@@ -31,6 +31,7 @@ const MENU_OPTIONS = [
 // ----------------------------------------------------------------------
 
 export default function AccountPopover() {
+  const account = getNomeUsuario()
   const [open, setOpen] = useState(null);
 
   const handleOpen = (event) => {

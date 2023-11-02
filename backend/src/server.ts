@@ -15,6 +15,7 @@ import { nfItemsController } from './routes/nfItemsController';
 import { productController } from './routes/productController';
 import { productTypeController } from './routes/productTypeController';
 import { stockController } from './routes/stockController';
+import { dashboardController } from './routes/dashboardController';
 
 // cria um objeto da classe Fastify
 const server = Fastify()
@@ -34,6 +35,7 @@ nfItemsController(server)
 productController(server)
 productTypeController(server)
 stockController(server)
+dashboardController(server)
 
 // sobe o servidor e fica ouvindo na porta 3333
 server.listen({

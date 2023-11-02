@@ -15,11 +15,13 @@ server.post('/movimentos/add', async (request) => {
     const bodyData = z.object({
         tipmov : z.string(),
         idfor: z.number(),
-        idusuario_alteracao: z.number(),
-        dtinc: z.date()
+        idusuario_alteracao: z.number()
     })
 
-    const {tipmov, idfor, idusuario_alteracao, dtinc} = bodyData.parse(request.body)
+    const dtcriacao = new Date();
+    const dtinc = dtcriacao
+
+    const {tipmov, idfor, idusuario_alteracao} = bodyData.parse(request.body)
 
     //Verifica se existe id do fornecedor
     const conferefornecedor = await prisma.tbfornecedores.findUnique({

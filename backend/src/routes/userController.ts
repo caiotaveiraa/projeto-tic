@@ -19,7 +19,7 @@ export async function userController(server: FastifyInstance) {
             })
     
             if (usuario && usuario.senha === senha) {
-                return { success: true, message: 'Login bem-sucedido' };
+                return { success: true, idusuario: usuario.idusuario, nome: usuario.nome, message: 'Login bem-sucedido' };
             } else {
                 return { success: false, message: 'Credenciais inválidas' };
             }

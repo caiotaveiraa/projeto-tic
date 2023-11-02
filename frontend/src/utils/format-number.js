@@ -19,7 +19,8 @@ export function fPercent(number) {
 }
 
 export function fShortenNumber(number) {
-  const format = number ? numeral(number).format('0.00a') : '';
+  // Use o numeral apenas para formatar números maiores que zero
+  const format = number > 0 ? numeral(number).format('0.00a') : number.toString();
 
   return result(format, '.00');
 }
