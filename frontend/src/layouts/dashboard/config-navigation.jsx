@@ -23,6 +23,16 @@ const navConfig = [
     icon: icon('ic_cart'),
   },
   {
+    title: 'produtos',
+    path: '/product',
+    icon: icon('ic_cart'),
+  },
+  {
+    title: 'unidades de medida',
+    path: '/measureunit',
+    icon: icon('ic_cart'),
+  },
+  {
     title: 'blog',
     path: '/blog',
     icon: icon('ic_blog'),
