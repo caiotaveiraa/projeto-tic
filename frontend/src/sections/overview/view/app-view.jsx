@@ -6,7 +6,7 @@ import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
 import { getNomeUsuario } from 'src/api/nomeusuario';
-import { quantidadenf, quantidadeTipos, quantidadeProdutos, quantidadeMovimentos } from 'src/api/dashboard';
+import { quantidadenf, quantidadeTipos, ultimosMovimentos, quantidadeProdutos, quantidadeMovimentos } from 'src/api/dashboard';
 
 import AppNewsUpdate from '../app-news-update';
 import AppOrderTimeline from '../app-order-timeline';
@@ -22,6 +22,7 @@ export default function AppView() {
   const [quantNf, setQuantNf] = useState(0)
   const [quantMovimentos, setQuantMovimentos] = useState(0)
   const [quantTipos, setQuantTipos] = useState([]);
+  const [movimentos, setMovimentos] = useState([]);
   const account = getNomeUsuario()
 
   async function carregarInformacoes() {
@@ -30,10 +31,12 @@ export default function AppView() {
       setQuantProdutos(produtos)
       const nf = await quantidadenf()
       setQuantNf(nf)
-      const movimentos = await quantidadeMovimentos()
-      setQuantMovimentos(movimentos)
+      const totalmovimentos = await quantidadeMovimentos()
+      setQuantMovimentos(totalmovimentos)
       const tipos = await quantidadeTipos();
       setQuantTipos(tipos)
+      const ultMovimentos = await ultimosMovimentos()
+      setMovimentos(ultMovimentos)
       setInfoCarregadas(true);
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
@@ -54,6 +57,21 @@ export default function AppView() {
     label: tipoProduto.nometipprod,
     value: tipoProduto.quantidade,
   }));
+
+  const last6Movimentos = movimentos.slice(-6); // Pega as últimas 6 movimentações
+
+  const movimentosList = last6Movimentos.map((movimento) => {
+    // Crie uma nova data ajustando o fuso horário para UTC
+    const dataUTC = new Date(movimento.dtinc);
+    dataUTC.setMinutes(dataUTC.getMinutes() + dataUTC.getTimezoneOffset());
+  
+    return {
+      id: `movimento${movimento.idmovimento}`, // Cria um ID único para cada movimento
+      title: `Movimentação Código #${movimento.idmovimento}`,
+      type: 'movimento',
+      time: dataUTC, // Use a data ajustada
+    };
+  });
 
   return (
     <Container maxWidth="xl">
@@ -143,19 +161,8 @@ export default function AppView() {
 
         <Grid xs={12} md={6} lg={4}>
           <AppOrderTimeline
-            title="Order Timeline"
-            list={[...Array(5)].map((_, index) => ({
-              id: faker.string.uuid(),
-              title: [
-                '1983, orders, $4220',
-                '12 Invoices have been paid',
-                'Order #37745 from September',
-                'New order placed #XF-2356',
-                'New order placed #XF-2346',
-              ][index],
-              type: `order${index + 1}`,
-              time: faker.date.past(),
-            }))}
+            title="Últimas movimentações"
+            list={movimentosList}
           />
         </Grid>
       </Grid>

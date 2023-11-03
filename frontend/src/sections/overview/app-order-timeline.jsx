@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Timeline from '@mui/lab/Timeline';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import TimelineDot from '@mui/lab/TimelineDot';
 import Typography from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
@@ -11,6 +14,9 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineItem, { timelineItemClasses } from '@mui/lab/TimelineItem';
 
 import { fDateTime } from 'src/utils/format-time';
+
+import Iconify from 'src/components/iconify';
+
 
 // ----------------------------------------------------------------------
 
@@ -33,6 +39,18 @@ export default function AnalyticsOrderTimeline({ title, subheader, list, ...othe
           <OrderItem key={item.id} item={item} lastTimeline={index === list.length - 1} />
         ))}
       </Timeline>
+
+      <Divider sx={{ borderStyle: 'dashed' }} />
+
+      <Box sx={{ p: 2, textAlign: 'right' }}>
+        <Button
+          size="small"
+          color="inherit"
+          endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
+        >
+          Visualizar todas
+        </Button>
+      </Box>
     </Card>
   );
 }

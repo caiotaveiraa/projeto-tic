@@ -57,3 +57,18 @@ export const quantidadeProdutos = async () => {
       return null; // Ou algum valor padrão apropriado em caso de erro
     }
   };
+
+  export const ultimosMovimentos = async () => {
+    try {
+      const resp = await fetch(`http://localhost:3333/ultimosmovimentos`);
+      if (resp.ok) {
+        const movimentos = await resp.json();
+        return movimentos
+      }
+      console.log('Falha na busca por dados');
+      return null;
+    } catch (error) {
+      console.log(error);
+      return null; // Ou algum valor padrão apropriado em caso de erro
+    }
+  };

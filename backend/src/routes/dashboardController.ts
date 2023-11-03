@@ -16,7 +16,7 @@ export async function dashboardController(server: FastifyInstance) {
     })
 
     server.get('/quantidadenf', async () => {
-        const movimentos = await prisma.tbmovimentos.findMany()
+        const movimentos = await prisma.tbnf.findMany()
         return movimentos.length
     })
 
@@ -29,4 +29,9 @@ export async function dashboardController(server: FastifyInstance) {
         `;
         return quantidade;
     });
+
+    server.get('/ultimosmovimentos', async () => {
+        const movimentos = await prisma.tbmovimentos.findMany()
+        return movimentos
+    })
 }
