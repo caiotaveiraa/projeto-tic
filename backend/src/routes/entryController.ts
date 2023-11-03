@@ -1,8 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale'; // Importe o idioma desejado
 
 export async function entryController(server: FastifyInstance) {
  // CRUD tbmovimentos
