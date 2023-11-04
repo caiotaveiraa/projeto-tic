@@ -121,3 +121,4 @@ UserTableRow.propTypes = {
   onDeleteProduct: PropTypes.func,
   onEditProduct: PropTypes.func,
 };
+

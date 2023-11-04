@@ -12,6 +12,7 @@ export const Page404 = lazy(() => import('src/pages/page-not-found'));
 export const RegisterPage = lazy(() => import('src/pages/register'));
 export const ProductPage = lazy(() => import('src/pages/product'));
 export const MeasureUnitPage = lazy(() => import('src/pages/measure-unit'));
+export const StockLocationPage = lazy(() => import('src/pages/locals'))
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +33,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'product', element: <ProductPage /> },
         { path: 'measureunit', element: <MeasureUnitPage /> },
+        { path: 'stocklocation', element: <StockLocationPage />},
       ],
     },
     {
