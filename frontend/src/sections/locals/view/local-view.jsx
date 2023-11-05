@@ -266,7 +266,7 @@ export default function LocalPage() {
                       selected={selected.indexOf(row.nomelocal) !== -1}
                       handleClick={(event) => handleClick(event, row.nomelocal)}
                       onDeleteLocal={handleDeleteLocal}
-                      onEditlocal={handleEditLocal}
+                      onEditLocal={handleEditLocal}
                     />
                   ))}
 

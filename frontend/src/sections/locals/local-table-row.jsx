@@ -16,14 +16,15 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
-    selected,
-    idlocal,
-    nomelocal,
-    handleClick,
-    onDeleteLocal,
-    onEditLocal,
-  }) {
+
+export default function LocalTableRow({
+  selected,
+  idlocal,
+  nomelocal,
+  handleClick,
+  onDeleteLocal,
+  onEditLocal,
+}) {
     const [open, setOpen] = useState(null);
   
     const handleOpenMenu = (event) => {
@@ -101,7 +102,8 @@ export default function UserTableRow({
     );
   }
   
-  UserTableRow.propTypes = {
+  
+  LocalTableRow.propTypes = {
     idlocal: PropTypes.any,
     nomelocal: PropTypes.any,
     handleClick: PropTypes.func,
