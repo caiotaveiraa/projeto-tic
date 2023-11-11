@@ -11,7 +11,7 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function MeasureUnitTableToolbar({ numSelected, filterName, onFilterName }) {
+export default function SupplierTableToolbar({ numSelected, filterName, onFilterName }) {
   return (
     <Toolbar
       sx={{
@@ -33,7 +33,7 @@ export default function MeasureUnitTableToolbar({ numSelected, filterName, onFil
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Procurar Unidade de Medida..."
+          placeholder="Procurar Fornecedor..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
@@ -62,7 +62,7 @@ export default function MeasureUnitTableToolbar({ numSelected, filterName, onFil
   );
 }
 
-MeasureUnitTableToolbar.propTypes = {
+SupplierTableToolbar.propTypes = {
   numSelected: PropTypes.number,
   filterName: PropTypes.string,
   onFilterName: PropTypes.func,
