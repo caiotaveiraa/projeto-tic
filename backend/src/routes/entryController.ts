@@ -6,7 +6,20 @@ export async function entryController(server: FastifyInstance) {
  // CRUD tbmovimentos
 
  server.get('/movimentos', async () => {
-    const movimentos = await prisma.tbmovimentos.findMany()
+    const movimentos = await prisma.tbmovimentos.findMany({
+        include: {
+            tbfornecedores: {
+                select: {
+                    nomefor: true
+                }
+            },
+            tbusuarios: {
+                select: {
+                    usu_login: true
+                }
+            }
+        }
+    })
 
     return movimentos
 })
@@ -58,14 +71,12 @@ server.put('/movimentos/update', async (request) => {
         tipmov : z.string(),
         idfor: z.number(),
         idusuario_alteracao: z.number(),
-        dtinc: z.date()
     })
 
     const {idmovimento,
         tipmov,
         idfor,
-        idusuario_alteracao,
-        dtinc} = putBody.parse(request.body)
+        idusuario_alteracao,} = putBody.parse(request.body)
 
     const conferefornecedor = await prisma.tbfornecedores.findUnique({
         where: { idfor: idfor },
@@ -86,7 +97,6 @@ server.put('/movimentos/update', async (request) => {
                 tipmov,
                 idfor,
                 idusuario_alteracao,
-                dtinc
             },
         })
         return movimentosUpdate ?  movimentosUpdate :  {}

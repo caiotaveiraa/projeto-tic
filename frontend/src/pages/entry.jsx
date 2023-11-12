@@ -1,16 +1,17 @@
 import { Helmet } from 'react-helmet-async';
 
-import { MeasureUnitView } from 'src/sections/measureunit/view';
+import { EntryView } from 'src/sections/entry/view';
+
 // ----------------------------------------------------------------------
 
-export default function UserPage() {
+export default function EntryPage() {
   return (
     <>
       <Helmet>
-        <title> Unidades de Medida </title>
+        <title> Movimentos </title>
       </Helmet>
 
-      <MeasureUnitView />
+      <EntryView />
     </>
   );
 }

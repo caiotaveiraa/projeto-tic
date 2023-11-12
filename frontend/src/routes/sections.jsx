@@ -14,6 +14,7 @@ export const ProductPage = lazy(() => import('src/pages/product'));
 export const MeasureUnitPage = lazy(() => import('src/pages/measure-unit'));
 export const SupplierPage = lazy(() => import('src/pages/supplier'));
 export const StockLocationPage = lazy(() => import('src/pages/locals'))
+export const EntryPage = lazy(() => import('src/pages/entry'))
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +35,7 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'product', element: <ProductPage /> },
         { path: 'measureunit', element: <MeasureUnitPage /> },
+        { path: 'entry', element: <EntryPage /> },
         { path: 'supplier', element: <SupplierPage /> },
         { path: 'stocklocation', element: <StockLocationPage />},
       ],

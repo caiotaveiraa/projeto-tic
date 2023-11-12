@@ -10,29 +10,22 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaFornecedor } from 'src/api/fornecedor';
+import { deletaMovimento } from 'src/api/movimentos';
 
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function SupplierTableRow({
+export default function EntryTableRow({
   selected,
+  idmovimento,
+  tipmov,
   idfor,
-  nomefor,
-  fisjur,
-  cnpjcpf,
-  telefone,
-  email,
-  cep,
-  cidade,
-  rua,
-  bairro,
-  numero,
-  complemento,
+  idusuario_alteracao,
+  dtinc,
   handleClick,
-  onDeleteFornecedor,
-  onEditFornecedor,
+  onDeleteEntry,
+  onEditEntry,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -44,22 +37,22 @@ export default function SupplierTableRow({
     setOpen(null);
   };
 
-  const handleDeleteFornecedor = async (id) => {
+  const handleDeleteEntry = async (id) => {
     try {
-      const resp = await deletaFornecedor(id)
+      const resp = await deletaMovimento(id)
       if(resp)
       {
         console.log(resp)
-        onDeleteFornecedor(idfor);
+        onDeleteEntry(idmovimento);
       }
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
     handleCloseMenu()
   }
-  const handleEditFornecedor = async (id) => {
+  const handleEditEntry = async (id) => {
     console.log(id)
-    onEditFornecedor(idfor)
+    onEditEntry(idmovimento)
     handleCloseMenu()
   }
 
@@ -70,35 +63,21 @@ export default function SupplierTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{idfor}</TableCell>
+        <TableCell>{idmovimento}</TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {nomefor}
+              {tipmov}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell align='justify'>{fisjur}</TableCell>
+        <TableCell align='justify'>{idfor}</TableCell>
 
-        <TableCell align='justify'>{cnpjcpf}</TableCell>
+        <TableCell align='justify'>{idusuario_alteracao}</TableCell>
 
-        <TableCell align='justify'>{telefone}</TableCell>
-
-        <TableCell align='justify'>{email}</TableCell>
-
-        <TableCell align='justify'>{cep}</TableCell>
-
-        <TableCell align='justify'>{cidade}</TableCell>
-
-        <TableCell align='justify'>{rua}</TableCell>
-
-        <TableCell align='justify'>{bairro}</TableCell>
-
-        <TableCell align='justify'>{numero}</TableCell>
-
-        <TableCell align='justify'>{complemento}</TableCell>
+        <TableCell align='justify'>{dtinc}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -117,12 +96,12 @@ export default function SupplierTableRow({
           sx: { width: 140 },
         }}
         >
-        <MenuItem onClick={() => handleEditFornecedor(idfor)}>
+        <MenuItem onClick={() => handleEditEntry(idmovimento)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Editar
         </MenuItem>
 
-        <MenuItem onClick={() => handleDeleteFornecedor(idfor)} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleDeleteEntry(idmovimento)} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Deletar
         </MenuItem>
@@ -131,21 +110,14 @@ export default function SupplierTableRow({
   );
 }
 
-SupplierTableRow.propTypes = {
+EntryTableRow.propTypes = {
+  idmovimento: PropTypes.any,
+  tipmov: PropTypes.any,
   idfor: PropTypes.any,
-  nomefor: PropTypes.any,
-  fisjur: PropTypes.any,
-  cnpjcpf: PropTypes.any,
-  telefone: PropTypes.any,
-  email: PropTypes.any,
-  cep: PropTypes.any,
-  cidade: PropTypes.any,
-  rua: PropTypes.any,
-  bairro: PropTypes.any,
-  numero: PropTypes.any,
-  complemento: PropTypes.any,
+  idusuario_alteracao: PropTypes.any,
+  dtinc: PropTypes.any,
   handleClick: PropTypes.func,
   selected: PropTypes.any,
-  onDeleteFornecedor: PropTypes.func,
-  onEditFornecedor: PropTypes.func,
+  onDeleteEntry: PropTypes.func,
+  onEditEntry: PropTypes.func,
 };

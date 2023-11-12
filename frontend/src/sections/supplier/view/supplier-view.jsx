@@ -33,11 +33,14 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: '#f7f7fa', // Defina a cor de fundo como cinza (substitua 'gray' pela cor desejada)
-  borderRadius: '8px', // Defina o raio das bordas para torná-las arredondadas
+  bgcolor: '#f7f7fa',
+  borderRadius: '8px',
   boxShadow: 24,
   p: 4,
+  maxHeight: '80vh', 
+  overflowY: 'auto',
 };
+
 export default function SupplierPage() {
   const [page, setPage] = useState(0);
 
@@ -138,17 +141,26 @@ export default function SupplierPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteUnit = (id) => {
+  const handleDeleteFornecedor = (id) => {
     console.log('Entrou')
     // Atualize o estado excluindo o produto com o ID correspondente
     setfornecedoresArray((prevFornecedores) => prevFornecedores.filter((fornecedor) => fornecedor.idfor !== id));
   }
-  const handleEditUnit = (id) => {
+  const handleEditFornecedor = (id) => {
     console.log('Entrou')
     const fornecedorEditado = fornecedoresArray.find(fornecedor => fornecedor.idfor === id)
     setidfor(fornecedorEditado.idfor)
     setnomefor(fornecedorEditado.nomefor)
     setfisjur(fornecedorEditado.fisjur)
+    setcnpjcpf(fornecedorEditado.cnpjcpf)
+    settelefone(fornecedorEditado.telefone)
+    setemail(fornecedorEditado.email)
+    setcep(fornecedorEditado.cep)
+    setcidade(fornecedorEditado.cidade)
+    setrua(fornecedorEditado.rua)
+    setbairro(fornecedorEditado.bairro)
+    setnumero(fornecedorEditado.numero)
+    setcomplemento(fornecedorEditado.complemento)
     setOpen(true)
   }
 
@@ -380,8 +392,8 @@ export default function SupplierPage() {
                       complemento={row.complemento}
                       selected={selected.indexOf(row.nomefor) !== -1}
                       handleClick={(event) => handleClick(event, row.nomefor)}
-                      onDeleteUnidade={handleDeleteUnit}
-                      onEditUnidade={handleEditUnit}
+                      onDeleteFornecedor={handleDeleteFornecedor}
+                      onEditFornecedor={handleEditFornecedor}
                     />
                   ))}
 
