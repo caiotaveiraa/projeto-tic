@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaMovimento } from 'src/api/movimentos';
-
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -38,20 +36,10 @@ export default function EntryTableRow({
   };
 
   const handleDeleteEntry = async (id) => {
-    try {
-      const resp = await deletaMovimento(id)
-      if(resp)
-      {
-        console.log(resp)
-        onDeleteEntry(idmovimento);
-      }
-    } catch (erro) {
-      console.error("Ocorreu um erro:", erro);
-    }
+    onDeleteEntry(idmovimento)
     handleCloseMenu()
   }
   const handleEditEntry = async (id) => {
-    console.log(id)
     onEditEntry(idmovimento)
     handleCloseMenu()
   }
@@ -95,7 +83,12 @@ export default function EntryTableRow({
         PaperProps={{
           sx: { width: 140 },
         }}
-        >
+      >
+        <MenuItem onClick={() => handleEditEntry(idmovimento)}>
+          <Iconify icon="material-symbols:list" sx={{ mr: 2 }} />
+          Itens
+        </MenuItem>
+
         <MenuItem onClick={() => handleEditEntry(idmovimento)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Editar

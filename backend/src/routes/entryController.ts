@@ -17,6 +17,14 @@ export async function entryController(server: FastifyInstance) {
                 select: {
                     usu_login: true
                 }
+            },
+            tbmovitens: {
+                select: {
+                    idproduto: true,
+                    idlocal: true,
+                    quantidade: true,
+                    dtinc: true,
+                }
             }
         }
     })

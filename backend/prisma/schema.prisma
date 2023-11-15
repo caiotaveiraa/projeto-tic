@@ -48,7 +48,7 @@ model tbmovimentos {
   tipmov              String?         @db.VarChar(2)
   idfor               Int?
   idusuario_alteracao Int?
-  dtinc               DateTime?       @db.Date
+  dtinc               DateTime?       @db.Timestamp(6)
   tbfornecedores      tbfornecedores? @relation(fields: [idfor], references: [idfor], onDelete: NoAction, onUpdate: NoAction, map: "fk_tbmovimentos_idfor")
   tbusuarios          tbusuarios?     @relation(fields: [idusuario_alteracao], references: [idusuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_tbmovimentos_idusuario")
   tbmovitens          tbmovitens[]
