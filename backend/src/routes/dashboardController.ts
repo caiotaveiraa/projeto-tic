@@ -30,6 +30,26 @@ export async function dashboardController(server: FastifyInstance) {
         return quantidade;
     });
 
+    server.get('/entradasprodutos', async () => {
+        const quantidade = await prisma.$queryRaw`
+            SELECT COUNT(mi.idproduto)::int AS quantidade
+            FROM tbmovitens mi
+            INNER JOIN tbmovimentos mo ON mi.idmovimento = mo.idmovimento
+            WHERE mo.tipmov = 'EN'
+        `;
+        return quantidade;
+    });
+    
+    server.get('/saidasprodutos', async () => {
+        const quantidade = await prisma.$queryRaw`
+            SELECT COUNT(mi.idproduto)::int AS quantidade
+            FROM tbmovitens mi
+            INNER JOIN tbmovimentos mo ON mi.idmovimento = mo.idmovimento
+            WHERE mo.tipmov = 'SA'
+        `;
+        return quantidade;
+    });
+    
     server.get('/ultimosmovimentos', async () => {
         const movimentos = await prisma.tbmovimentos.findMany()
         return movimentos

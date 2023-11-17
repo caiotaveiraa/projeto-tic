@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novoLocal, buscaLocais } from 'src/api/Locais';
+import { novoLocal, buscaLocais, deletaLocal } from 'src/api/Locais';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -127,10 +127,17 @@ export default function LocalPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteLocal = (id) => {
-    console.log('Entrou')
-    // Atualize o estado excluindo o local com o ID correspondente
-    setLocaisArray((prevLocais) => prevLocais.filter((local) => local.idlocal !== id));
+  const handleDeleteLocal = async (id) => {
+    try {
+      const resp = await deletaLocal(id)
+      console.log(resp)
+      if (resp) {
+        // REMOVE O LOCAL EXCLUIDO 
+        setLocaisArray((prevLocais) => prevLocais.filter((local) => local.idlocal !== id));
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
   }
   const handleEditLocal = (id) => {
     console.log('Entrou')

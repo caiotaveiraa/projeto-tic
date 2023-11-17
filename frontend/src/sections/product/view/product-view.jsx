@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novoProduto, buscaProdutos } from 'src/api/produtos';
+import { novoProduto, buscaProdutos, deletaProdutos } from 'src/api/produtos';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -130,10 +130,17 @@ export default function ProductPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteProduct = (id) => {
-    console.log('Entrou')
-    // Atualize o estado excluindo o produto com o ID correspondente
-    setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+  const handleDeleteProduct = async (id) => {
+    try {
+      const resp = await deletaProdutos(id)
+      console.log(resp)
+      if (resp) {
+        // REMOVE O PRODUTO EXCLUIDO 
+        setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
   }
   const handleEditProduct = (id) => {
     console.log('Entrou')

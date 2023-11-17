@@ -64,7 +64,7 @@ export default function AppView() {
     // Crie uma nova data ajustando o fuso horário para UTC
     const dataUTC = new Date(movimento.dtinc);
     dataUTC.setMinutes(dataUTC.getMinutes() + dataUTC.getTimezoneOffset());
-  
+
     return {
       id: `movimento${movimento.idmovimento}`, // Cria um ID único para cada movimento
       title: `Movimentação Código #${movimento.idmovimento}`,
@@ -103,17 +103,59 @@ export default function AppView() {
             title="Produtos"
             total={quantProdutos}
             color="warning"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_buy.png" />}
+            icon={
+              <img
+                alt="icon"
+                src="/assets/icons/glass/ic_glass_buy.png"
+                style={{
+                  filter: 'url(#filtro-verde)',
+                }}
+              />
+            }
           />
+          <svg height="0" width="0">
+            <defs>
+              <filter id="filtro-verde">
+                <feColorMatrix
+                  type="matrix"
+                  values="0 0 0 0 0
+                      0 1 0 0 0
+                      0 0 0 0 0
+                      0 0 0 1 0"
+                />
+              </filter>
+            </defs>
+          </svg>
         </Grid>
 
         <Grid xs={12} sm={6} md={3}>
           <AppWidgetSummary
-            title="Bug Reports"
-            total={234}
-            color="error"
-            icon={<img alt="icon" src="/assets/icons/glass/ic_glass_message.png" />}
+            title="Produtos"
+            total={quantProdutos}
+            color="warning"
+            icon={
+              <img
+                alt="icon"
+                src="/assets/icons/glass/ic_glass_buy.png"
+                style={{
+                  filter: 'url(#filtro-vermelho)',
+                }}
+              />
+            }
           />
+          <svg height="0" width="0">
+            <defs>
+              <filter id="filtro-vermelho">
+                <feColorMatrix
+                  type="matrix"
+                  values="1 0 0 0 0
+                    0 0 0 0 0
+                    0 0 0 0 0
+                    0 0 0 1 0"
+                />
+              </filter>
+            </defs>
+          </svg>
         </Grid>
 
         <Grid xs={12} md={6} lg={4}>

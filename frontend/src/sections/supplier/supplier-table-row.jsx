@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaFornecedor } from 'src/api/fornecedor';
-
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -45,15 +43,10 @@ export default function SupplierTableRow({
   };
 
   const handleDeleteFornecedor = async (id) => {
-    try {
-      const resp = await deletaFornecedor(id)
-      if(resp)
-      {
-        console.log(resp)
-        onDeleteFornecedor(idfor);
-      }
-    } catch (erro) {
-      console.error("Ocorreu um erro:", erro);
+    const confirmacao = window.confirm("Tem certeza que deseja deletar o fornecedor?");
+    // Se o usuário clicou em "OK", chama a função de deletar
+    if (confirmacao) {
+      onDeleteFornecedor(id);
     }
     handleCloseMenu()
   }

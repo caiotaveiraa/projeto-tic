@@ -36,9 +36,16 @@ export default function EntryTableRow({
   };
 
   const handleDeleteEntry = async (id) => {
-    onDeleteEntry(idmovimento)
-    handleCloseMenu()
-  }
+    // Exibe um diálogo de confirmação antes de excluir
+    const confirmacao = window.confirm("Tem certeza que deseja deletar a movimentação e todos seus itens relacionados?\nEssa operação NÃO removerá as quantidades em estoque alteradas por essa movimentação.");
+
+    // Se o usuário clicou em "OK", chama a função de deletar
+    if (confirmacao) {
+      onDeleteEntry(idmovimento);
+    }
+
+    handleCloseMenu();
+  };
   const handleEditEntry = async (id) => {
     onEditEntry(idmovimento)
     handleCloseMenu()

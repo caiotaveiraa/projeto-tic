@@ -109,7 +109,6 @@ export async function entryItemsController(server: FastifyInstance) {
             idmovimento: z.number(),
             idproduto: z.number(),
             idlocal: z.number(),
-            dtinc: z.date(),
             quantidade: z.number()
         })
 
@@ -117,7 +116,6 @@ export async function entryItemsController(server: FastifyInstance) {
             idmovimento,
             idproduto,
             idlocal,
-            dtinc,
             quantidade } = putBody.parse(request.body)
 
         //Verifica se existe id de local
@@ -131,11 +129,16 @@ export async function entryItemsController(server: FastifyInstance) {
         });
 
         //verififca se existe id da Tmovimentos
-        const confereMovimentoId = await prisma.tbmovimentos.findUnique({
+        const dadosMovimento = await prisma.tbmovimentos.findUnique({
             where: { idmovimento: idmovimento },
         });
 
-        if (confereLocal && confereProduto && confereMovimentoId) {
+        //VERIFICA SE O PRODUTO A SER INSERIDO  JA EXISTE EM ESTOQUE NO LOCAL INFORMADO
+        const dadosEstoque = await prisma.tbestoque.findMany({
+            where: { idproduto: idproduto, idlocal: idlocal },
+        })
+
+        if (confereLocal && confereProduto && dadosMovimento) {
             const movimentosItensUpdate = await prisma.tbmovitens.update({
                 where: {
                     idmovimento_seqitem_idproduto: {
@@ -146,10 +149,38 @@ export async function entryItemsController(server: FastifyInstance) {
                 },
                 data: {
                     idlocal,
-                    dtinc,
+                    dtinc: new Date(),
                     quantidade
                 },
             })
+            if (dadosMovimento.tipmov === 'EN') {
+                // Se for uma entrada, adicione a quantidade ao estoque
+                await prisma.tbestoque.updateMany({
+                    where: { idproduto: idproduto, idlocal: idlocal },
+                    data: {
+                        quantidade: {
+                            increment: quantidade,
+                        },
+                    },
+                });
+            } else if (dadosMovimento.tipmov === 'SA') {
+                // Se for uma saída, subtraia a quantidade do estoque
+                //Verifica se a quantidade passada é valida
+                const quantidadeNoEstoque = dadosEstoque.length > 0 ? Number(dadosEstoque[0].quantidade) : 0;
+                if (quantidadeNoEstoque > quantidade && quantidadeNoEstoque - quantidade >= 0) {
+                    await prisma.tbestoque.updateMany({
+                        where: { idproduto: idproduto, idlocal: idlocal },
+                        data: {
+                            quantidade: {
+                                decrement: quantidade,
+                            },
+                        },
+                    });
+                }
+                else {
+                    return (`Quantidade inválida`)
+                }
+            }
             return movimentosItensUpdate ? movimentosItensUpdate : {}
         }
         else {
@@ -157,6 +188,7 @@ export async function entryItemsController(server: FastifyInstance) {
         }
     })
 
+    //Deletar apenas 1 item
     server.delete('/movimentoItens/delete/:idmovimento/:seqitem/:idproduto', async (request) => {
         const idParam = z.object({
             idmovimento: z.string(),
@@ -181,6 +213,29 @@ export async function entryItemsController(server: FastifyInstance) {
             },
         })
 
+
+
+        //Retirar o item do estoque total
+
         return movimentoItemDeleted
     })
+
+    server.delete('/movimentoItens/deleteall/:idmovimento', async (request) => {
+        const idParam = z.object({
+            idmovimento: z.string(),
+        });
+        
+        const { idmovimento } = idParam.parse(request.params);
+        const idMovimento = Number(idmovimento);
+        
+        // Excluir os registros da tabela tbmovitens
+        const movimentosDeletados = await prisma.tbmovitens.deleteMany({
+            where: {
+                idmovimento: idMovimento,
+            },
+        });
+    
+        return movimentosDeletados.count;
+    });
+          
 }

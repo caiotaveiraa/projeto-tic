@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novaUnidade, buscaUnidades } from 'src/api/unidademedida';
+import { novaUnidade, buscaUnidades, deletaUnidade } from 'src/api/unidademedida';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -127,10 +127,17 @@ export default function MeasureUnitPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteUnit = (id) => {
-    console.log('Entrou')
-    // Atualize o estado excluindo o produto com o ID correspondente
-    setunidadesArray((prevUnidades) => prevUnidades.filter((unidade) => unidade.idunidade !== id));
+  const handleDeleteUnit = async (id) => {
+    try {
+      const resp = await deletaUnidade(id)
+      console.log(resp)
+      if (resp) {
+        // REMOVE A UNIDADE EXCLUIDA
+        setunidadesArray((prevUnidades) => prevUnidades.filter((unidade) => unidade.idunidade !== id));
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
   }
   const handleEditUnit = (id) => {
     console.log('Entrou')

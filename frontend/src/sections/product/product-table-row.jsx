@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaProdutos } from 'src/api/produtos';
-
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -38,15 +36,10 @@ export default function ProductTableRow({
   };
 
   const handleDeleteProduct = async (id) => {
-    try {
-      const resp = await deletaProdutos(id)
-      if(resp)
-      {
-        console.log(resp)
-        onDeleteProduct(idproduto);
-      }
-    } catch (erro) {
-      console.error("Ocorreu um erro:", erro);
+    const confirmacao = window.confirm("Tem certeza que deseja deletar o produto?");
+    // Se o usuário clicou em "OK", chama a função de deletar
+    if (confirmacao) {
+      onDeleteProduct(id);
     }
     handleCloseMenu()
   }

@@ -15,6 +15,14 @@ export const buscaMovimentos = async () => {
 
   export const deletaMovimento = async (movId) => {
     try {
+      // Primeiro preciso deletar todos os itens ligados a esse movimento.
+      const resp2 = await fetch(`http://localhost:3333/movimentoItens/deleteall/${movId}`, {
+        method: 'DELETE', // Especifica o método como DELETE
+      });
+      if (resp2.ok) {
+        const itensApagados = await resp2.json();
+        console.log(itensApagados)
+      }
       const resp = await fetch(`http://localhost:3333/movimentos/delete/${movId}`, {
         method: 'DELETE', // Especifica o método como DELETE
       });

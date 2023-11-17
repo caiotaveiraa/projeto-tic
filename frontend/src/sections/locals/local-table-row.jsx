@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaLocal } from 'src/api/Locais';
-
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -36,15 +34,10 @@ export default function LocalTableRow({
     };
   
      const handleDeleteLocal = async (id) => {
-      try {
-        const resp = await deletaLocal(id)
-        if(resp)
-        {
-          console.log(resp)
-          onDeleteLocal(idlocal);
-        }
-      } catch (erro) {
-        console.error("Ocorreu um erro:", erro);
+      const confirmacao = window.confirm("Tem certeza que deseja deletar o local de estoque?");
+      // Se o usuário clicou em "OK", chama a função de deletar
+      if (confirmacao) {
+        onDeleteLocal(id);
       }
       handleCloseMenu()
     }

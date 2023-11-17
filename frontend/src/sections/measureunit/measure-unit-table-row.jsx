@@ -10,8 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 
-import { deletaUnidade } from 'src/api/unidademedida';
-
 import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
@@ -36,21 +34,16 @@ export default function MeasureUnitTableRow({
   };
 
   const handleDeleteUnidade = async (id) => {
-    try {
-      const resp = await deletaUnidade(id)
-      if(resp)
-      {
-        console.log(resp)
-        onDeleteUnidade(idunidade);
-      }
-    } catch (erro) {
-      console.error("Ocorreu um erro:", erro);
+    const confirmacao = window.confirm("Tem certeza que deseja deletar a unidade de medida?");
+    // Se o usuário clicou em "OK", chama a função de deletar
+    if (confirmacao) {
+      onDeleteUnidade(id);
     }
     handleCloseMenu()
   }
   const handleEditUnidade = async (id) => {
     console.log(id)
-    onEditUnidade(idunidade)
+    onEditUnidade(id)
     handleCloseMenu()
   }
 

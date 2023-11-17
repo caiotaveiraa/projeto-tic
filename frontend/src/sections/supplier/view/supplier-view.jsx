@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novoFornecedor, buscaFornecedor } from 'src/api/fornecedor';
+import { novoFornecedor, buscaFornecedor, deletaFornecedor } from 'src/api/fornecedor';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -141,10 +141,17 @@ export default function SupplierPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteFornecedor = (id) => {
-    console.log('Entrou')
-    // Atualize o estado excluindo o produto com o ID correspondente
-    setfornecedoresArray((prevFornecedores) => prevFornecedores.filter((fornecedor) => fornecedor.idfor !== id));
+  const handleDeleteFornecedor = async (id) => {
+    try {
+      const resp = await deletaFornecedor(id)
+      console.log(resp)
+      if (resp) {
+        // REMOVE O LOCAL EXCLUIDO 
+        setfornecedoresArray((prevFornecedores) => prevFornecedores.filter((fornecedor) => fornecedor.idfor !== id));
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
   }
   const handleEditFornecedor = (id) => {
     console.log('Entrou')

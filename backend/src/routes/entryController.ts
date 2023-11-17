@@ -119,6 +119,8 @@ server.delete('/movimentos/delete/:movID', async (request) => {
         movID: z.string(),
     })
 
+    //Deletar todos os itens de movimentação antes de retirá-la
+
     const { movID } = idParam.parse(request.params)
     const idmov = Number(movID)
 

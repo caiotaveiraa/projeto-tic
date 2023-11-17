@@ -68,9 +68,9 @@ export default function EntryPage() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState(0); // Tabs da modal
 
-  const handleTabChange = (event, newValue) => {
+  const handleTabChange = (event, newValue) => { // Mudar tab do modal
     setTabValue(newValue);
   };
 
@@ -85,8 +85,10 @@ export default function EntryPage() {
 
   // Itens das movimentações
   const [itens, setItens] = useState([]);
+  // Itens adicionados
   const [novosItens, setNovosItens] = useState([])
-  const [indiceItem, setIndiceItem] = useState(1); // Estado para o índice do próximo item a ser adicionado
+  // Estado para o índice do próximo item a ser adicionado
+  const [indiceItem, setIndiceItem] = useState(1); 
 
   // Função que traz todos os movimentos cadastrados
   async function obterMovimentos() {
@@ -171,11 +173,13 @@ export default function EntryPage() {
 
     const ultimoIndice = itensComIndice.reduce((maxIndex, item) => Math.max(maxIndex, item.seqitem), 0);
 
+    setTabValue(0)
+    setNovosItens([])
     setidmovimento(movimentoEditado.idmovimento)
     settipmov(movimentoEditado.tipmov)
     setidfor(movimentoEditado.idfor)
     setItens(itensComIndice);
-    setIndiceItem(ultimoIndice + 1)
+    setIndiceItem(ultimoIndice + 1) // Seta o indice do ultimo item do movimento
     setOpen(true);
   }
 
@@ -206,15 +210,17 @@ export default function EntryPage() {
     const movimentonovo = JSON.stringify(formData)
     try {
       const resp = await novoMovimento(movimentonovo, isInsercao)
-      // Usar Promise.all para aguardar todas as chamadas assíncronas no forEach
+      // Usar Promise.all para aguardar todas as chamadas assíncronas no map
+      // O map é usado para fazer uma requisição na API de adicionar item para cada item novo adicionado.
       await Promise.all(
         novosItens.map(async (item) => {
           const dadositem = {
-            idmovimento,
+            idmovimento: resp.idmovimento,
             idproduto: item.idproduto,
             idlocal: item.idlocal,
             quantidade: item.quantidade
           }
+          console.log(dadositem)
           const novoitem = JSON.stringify(dadositem);
           console.log(novoitem)
           const resp2 = await modificarItens(novoitem);
@@ -250,6 +256,8 @@ export default function EntryPage() {
   // LIMPA O FORMULARIO
   const handleClear = () => {
     setItens([])
+    setNovosItens([])
+    setTabValue(0) // Primeira tab da modal
     setidmovimento(0)
     setidfor(0)
     settipmov('')
