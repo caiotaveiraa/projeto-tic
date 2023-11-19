@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
+import { gerarRelatorioSaldoEstoquePDF } from 'src/api/relatorios';
 import { novoLocal, buscaLocais, deletaLocal } from 'src/api/Locais';
 
 import Iconify from 'src/components/iconify';
@@ -24,7 +25,6 @@ import LocalTableHead from '../local-table-head';
 import TableEmptyRows from '../table-empty_rows';
 import LocalTableToolbar from '../local-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-
 
 // ----------------------------------------------------------------------
 
@@ -237,6 +237,11 @@ export default function LocalPage() {
         <Button onClick={() => { handleOpen(); setIdLocal(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           Novo Local de Estoque
         </Button>
+
+        <Button onClick={() => { gerarRelatorioSaldoEstoquePDF(0,0); setIdLocal(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          Relatorio
+        </Button>
+
       </Stack>
 
       <Card>

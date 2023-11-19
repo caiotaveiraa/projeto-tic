@@ -1,6 +1,8 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
+import PDFDocument from 'pdfkit';
+
 
 export async function RelatoriosController(server: FastifyInstance) {
      //CRUD - Produtos (Conectada a outras entidades)
@@ -29,23 +31,39 @@ export async function RelatoriosController(server: FastifyInstance) {
         return relmovimentos;
     });
 
-     server.get('/relsaldoProdutos', async () => {
+    server.get('/relsaldoProdutos/:idProduto/:idLocal', async (request) => {
+        const idParam = z.object({
+            idProduto: z.string(),
+            idLocal: z.string()
+        })
+    
+        const { idProduto, idLocal } = idParam.parse(request.params)
+    
+        const prodId = Number(idProduto)
+        const locId = Number(idLocal)
+
+        // Execute a consulta construída
         const relsaldo = await prisma.$queryRaw`
             SELECT PROD.idproduto,   
-		           PROD.nomeprod,      
-		           PROD.quantminima,    
-		           TPROD.nometipprod,    
-		           UNID.nomeunidade,    
-		           UNID.siglaun,        
-		           EST.quantidade,      
-		           LOC.nomelocal       
-	        FROM tbestoque EST
-	        LEFT JOIN tbprodutos PROD ON (EST.idProduto = PROD.idProduto)
-	        LEFT JOIN tbLocais LOC ON (EST.idLocal = LOC.idLocal)
-	        LEFT JOIN tbtiposprodutos TPROD ON (PROD.idtipprod = TPROD.idtipprod)
-	        LEFT JOIN tbunidademedida UNID ON (PROD.idunidade = UNID.idunidade)
-
+                   PROD.nomeprod,      
+                   PROD.quantminima,    
+                   TPROD.nometipprod,    
+                   UNID.nomeunidade,    
+                   UNID.siglaun,        
+                   EST.quantidade,      
+                   LOC.nomelocal       
+                FROM tbestoque EST
+                JOIN tbLocais LOC ON (EST.idLocal = LOC.idLocal)
+                JOIN tbprodutos PROD ON (EST.idProduto = PROD.idProduto)	        
+                LEFT JOIN tbtiposprodutos TPROD ON (PROD.idtipprod = TPROD.idtipprod)
+                LEFT JOIN tbunidademedida UNID ON (PROD.idunidade = UNID.idunidade)  
+                WHERE 
+                    PROD.idProduto = CASE WHEN ${prodId !== 0} THEN ${prodId} ELSE PROD.idProduto END
+                    AND 
+                    EST.idLocal = CASE WHEN ${locId !== 0} THEN ${locId} ELSE EST.idLocal END
+                ORDER BY PROD.idproduto, EST.idLocal
         `;
+    
         return relsaldo;
     });
 
@@ -86,3 +104,4 @@ export async function RelatoriosController(server: FastifyInstance) {
 
 
 }
+

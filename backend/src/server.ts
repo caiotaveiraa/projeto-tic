@@ -16,6 +16,7 @@ import { productController } from './routes/productController';
 import { productTypeController } from './routes/productTypeController';
 import { stockController } from './routes/stockController';
 import { dashboardController } from './routes/dashboardController';
+import { RelatoriosController } from './routes/relatoriosContoller';
 
 // cria um objeto da classe Fastify
 const server = Fastify()
@@ -36,6 +37,7 @@ productController(server)
 productTypeController(server)
 stockController(server)
 dashboardController(server)
+RelatoriosController(server)
 
 // sobe o servidor e fica ouvindo na porta 3333
 server.listen({
