@@ -9,8 +9,6 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import CardHeader from '@mui/material/CardHeader';
 
-import { fToNow } from 'src/utils/format-time';
-
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
@@ -37,7 +35,7 @@ export default function AppNewsUpdate({ title, subheader, list, ...other }) {
           color="inherit"
           endIcon={<Iconify icon="eva:arrow-ios-forward-fill" />}
         >
-          View all
+          Visualizar Todos
         </Button>
       </Box>
     </Card>
@@ -53,7 +51,7 @@ AppNewsUpdate.propTypes = {
 // ----------------------------------------------------------------------
 
 function NewsItem({ news }) {
-  const { image, title, description, postedAt } = news;
+  const { image, title, description } = news;
 
   return (
     <Stack direction="row" alignItems="center" spacing={2}>
@@ -74,9 +72,6 @@ function NewsItem({ news }) {
         </Typography>
       </Box>
 
-      <Typography variant="caption" sx={{ pr: 3, flexShrink: 0, color: 'text.secondary' }}>
-        {fToNow(postedAt)}
-      </Typography>
     </Stack>
   );
 }

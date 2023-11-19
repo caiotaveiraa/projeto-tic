@@ -102,3 +102,33 @@ export const quantidadeProdutos = async () => {
       return null; // Ou algum valor padrão apropriado em caso de erro
     }
   };
+
+  export const maioresEstoques = async () => {
+    try {
+      const resp = await fetch(`http://localhost:3333/produtosmaiorestoque`);
+      if (resp.ok) {
+        const estoques = await resp.json();
+        return estoques
+      }
+      console.log('Falha na busca por dados');
+      return null;
+    } catch (error) {
+      console.log(error);
+      return null; // Ou algum valor padrão apropriado em caso de erro
+    }
+  };
+
+  export const ultimosItensMovimentados = async () => {
+    try {
+      const resp = await fetch(`http://localhost:3333/ultimositens`);
+      if (resp.ok) {
+        const ultimositens = await resp.json();
+        return ultimositens
+      }
+      console.log('Falha na busca por dados');
+      return null;
+    } catch (error) {
+      console.log(error);
+      return null; // Ou algum valor padrão apropriado em caso de erro
+    }
+  };

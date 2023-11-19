@@ -48,6 +48,11 @@ const navConfig = [
     icon: icon('ic_user'),
   },
   {
+    title: 'Nfe',
+    path: '/nf',
+    icon: icon('ic_user'),
+  },
+  {
     title: 'blog',
     path: '/blog',
     icon: icon('ic_blog'),
