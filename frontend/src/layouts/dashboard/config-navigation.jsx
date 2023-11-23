@@ -64,7 +64,7 @@ const navConfig = [
   },
   {
     title: 'relatórios',
-    path: '/relSaldoEstoque',
+    path: '/Relatorios',
     icon: icon('ic_lock'),
   },
   {

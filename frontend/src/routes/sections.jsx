@@ -16,6 +16,7 @@ export const SupplierPage = lazy(() => import('src/pages/supplier'));
 export const StockLocationPage = lazy(() => import('src/pages/locals'))
 export const EntryPage = lazy(() => import('src/pages/entry'))
 export const NfPage = lazy(() => import('src/pages/nf'))
+export const Relatorios = lazy(() => import('src/pages/relatorios'))
 
 // ----------------------------------------------------------------------
 
@@ -40,6 +41,7 @@ export default function Router() {
         { path: 'supplier', element: <SupplierPage /> },
         { path: 'stocklocation', element: <StockLocationPage />},
         { path: 'nf', element: <NfPage />},
+        { path: 'relatorios', element: <Relatorios />},
       ],
     },
     {

@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { gerarRelatorioSaldoEstoquePDF } from 'src/api/relatorios';
+import { gerarRelatorioFornecedorPDF } from 'src/api/relatorios';
 import { novoLocal, buscaLocais, deletaLocal } from 'src/api/Locais';
 
 import Iconify from 'src/components/iconify';
@@ -238,7 +238,7 @@ export default function LocalPage() {
           Novo Local de Estoque
         </Button>
 
-        <Button onClick={() => { gerarRelatorioSaldoEstoquePDF(0,0); setIdLocal(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+        <Button onClick={() => { gerarRelatorioFornecedorPDF(0,0); setIdLocal(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           Relatorio
         </Button>
 

@@ -1,35 +1,78 @@
 import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import PDFDocument from 'pdfkit';
-
 
 export async function RelatoriosController(server: FastifyInstance) {
-     //CRUD - Produtos (Conectada a outras entidades)
 
-     server.get('/relmovimentos', async () => {
+/*      Relatórios de Movimentações 
+        Filtros: 
+        - Entrada(1), Saída(2), Ambos(0);
+        - Nr do Movimento
+        - Fornecedor
+*/
+
+     server.get('/relmovimentos/:tipoMov/:idMovimento/:idFornecedor', async (request) => {
+        const idParam = z.object({
+            tipoMov: z.string(),
+            idMovimento: z.string(),
+            idFornecedor:  z.string()
+        })
+
+        const { tipoMov, idMovimento, idFornecedor } = idParam.parse(request.params)
+        
+        
+        let EntSai = '0'
+        if (tipoMov !== '0') {
+            if (tipoMov == '1') {
+                EntSai = 'EN' 
+            }
+            else {
+                EntSai = 'SA'
+            }
+
+        }
+
+        let idMov = Number(idMovimento) 
+
+        let idForn = Number(idFornecedor) 
+
         const relmovimentos = await prisma.$queryRaw`
-           SELECT MOV.idmovimento,
-                  MOV.tipmov,
-                  MOV.dtinc,
-                  LOC.nomelocal,
-                  FORN.idfor,
-                  FORN.nomefor,
-                  PROD.idproduto,
-                  PROD.nomeprod,
-                  TPROD.nometipprod,
-                  UNID.siglaun  
-           FROM tbmovimentos MOV
-           JOIN tbmovitens MOVITENS ON (MOV.idmovimento = MOVITENS.idmovimento)
-           LEFT JOIN tbfornecedores FORN ON (MOV.idfor = FORN.idfor)
-           LEFT JOIN tblocais LOC ON (MOVITENS.idlocal = LOC.idlocal)
-           LEFT JOIN tbprodutos PROD ON (MOVITENS.idproduto = PROD.idproduto)
-           LEFT JOIN tbtiposprodutos TPROD ON (PROD.idTipProd = TPROD.idTipProd)
-           LEFT JOIN tbunidademedida UNID ON (PROD.idunidade = UNID.idunidade)
-
+            SELECT MOV.idmovimento,
+                   MOV.tipmov,
+                   MOV.dtinc,
+                   LOC.nomelocal,
+                   FORN.idfor,
+                   FORN.nomefor,
+                   PROD.idproduto,
+                   PROD.nomeprod,
+                   MOVITENS.quantidade,
+                   TPROD.nometipprod,
+                   UNID.siglaun  
+            FROM tbmovimentos MOV
+            JOIN tbmovitens MOVITENS ON (MOV.idmovimento = MOVITENS.idmovimento)
+            LEFT JOIN tbfornecedores FORN ON (MOV.idfor = FORN.idfor)
+            LEFT JOIN tblocais LOC ON (MOVITENS.idlocal = LOC.idlocal)
+            LEFT JOIN tbprodutos PROD ON (MOVITENS.idproduto = PROD.idproduto)
+            LEFT JOIN tbtiposprodutos TPROD ON (PROD.idTipProd = TPROD.idTipProd)
+            LEFT JOIN tbunidademedida UNID ON (PROD.idunidade = UNID.idunidade)
+            WHERE
+                1 = 1
+                AND MOV.tipmov = CASE WHEN ${EntSai !== '0'} THEN ${EntSai} ELSE MOV.tipmov END
+                AND MOV.idmovimento = CASE WHEN ${idMov !== 0} THEN ${idMov} ELSE MOV.idmovimento END
+                AND FORN.idfor = CASE WHEN ${idForn !== 0} THEN ${idForn} ELSE FORN.idfor END
+                ORDER BY MOV.idmovimento, MOVITENS.seqitem, mov.dtinc
         `;
+    
+        // Retorna os resultados
         return relmovimentos;
     });
+    
+
+    /*      Relatórios de Saldo Produtos por Locais de Estoque 
+        Filtros: 
+        - Produto
+        - Local
+    */
 
     server.get('/relsaldoProdutos/:idProduto/:idLocal', async (request) => {
         const idParam = z.object({
@@ -67,40 +110,58 @@ export async function RelatoriosController(server: FastifyInstance) {
         return relsaldo;
     });
 
-    server.get('/relnfrecebidas', async () => {
-        const relNFs = await prisma.$queryRaw`
-           SELECT FORN.idfor,
-	              FORN.nomefor,
-	              FORN.cnpjcpf,
-	              FORN.telefone,
-	              FORN.cep,
-	              FORN.cidade,
-	              'Logradouro: ' || FORN.rua || ', ' || CAST(FORN.numero AS VARCHAR(10)) || ' Bairro: '|| FORN.bairro || ' Complemento: ' || FORN.complemento AS "Endereço Completo",
-	              FORN.email,
-	              NF.numnf,
-                  NF.serienf,
-	              NF.dtemissao,
-	              COALESCE(NF.vlrtotal, 0.00) AS "Vr. Total NF'-'E",
-	              SUM(COALESCE(NF.vlrtotal, 0.00)) OVER (PARTITION BY NF.idfor) AS "Vr. Total NF'-'E por Fornecedor",
-	              NF.observacao,
-	              CAST(PROD.idproduto AS VARCHAR) || ' ' || PROD.nomeprod AS "Produto",
-	              TPROD.nometipprod AS "Tipo Produto",
-	              UNID.siglaun AS "Un. Medida",
-	              NFITEM.seqitem AS "Seq. Item",
-	              COALESCE(NFITEM.vlrunitario, 0.00) AS "Vr. Uni. Item",
-	              NFITEM.quantidade AS "Quantidade",
-	              COALESCE(NFITEM.vlrtotitem, 0.00) AS "Vr. Total. Item",
-	              COUNT(NF.numnf) OVER (PARTITION BY NF.idfor) AS "Nr. NF'(s)' Fornecedor"
-           FROM tbnf NF
-           JOIN tbnfitens NFITEM ON (NF.idnf = NFITEM.idnf)
-           JOIN Tbfornecedores FORN ON (NF.idfor = FORN.idfor)
-           LEFT JOIN tbmovimentos MOV ON (NF.idmovimento = MOV.idmovimento)
-           LEFT JOIN tbprodutos PROD ON (NFITEM.idproduto = PROD.idproduto)
-           LEFT JOIN tbtiposprodutos TPROD ON (PROD.idTipProd = TPROD.idTipProd)
-           LEFT JOIN tbunidademedida UNID ON (PROD.idunidade = UNID.idunidade)
-        `;
-        return relNFs;
-    });
+    /*      Relatórios de Fornecedores cadastrados
+        Filtros: 
+        - Codigo
+        - nome
+        - cnpj
+        - 
+    */
+
+        server.get('/relFornecedoresCad/:idFornecedor/:fisJur', async (request) => {
+            const idParam = z.object({
+                idFornecedor: z.string(),
+                fisJur: z.string()
+            })
+        
+            const { idFornecedor, fisJur } = idParam.parse(request.params)
+        
+            const IdForn = Number(idFornecedor)
+            
+            let TipoFornecedor = '0'
+            if (fisJur !== '0') {
+                if (fisJur == '1') {
+                    TipoFornecedor = 'J' 
+                }
+                else {
+                    TipoFornecedor = 'F'
+                }
+
+            }
+        
+            // Execute a consulta construída
+            const relFornecedoresCad = await prisma.$queryRaw`
+               SELECT F.idfor,
+                      F.nomefor,
+                      F.cnpjcpf,
+                      F.fisjur,
+                      F.telefone,
+                      F.cep,
+                      F.rua,
+                      F.numero,
+                      F.bairro,
+                      F.complemento,
+                      F.cidade,
+                      F.email
+               FROM tbfornecedores F
+               WHERE  
+                F.idfor = CASE WHEN ${IdForn !== 0} THEN ${IdForn} ELSE F.idfor END 
+                AND F.fisjur = CASE WHEN ${TipoFornecedor !== '0'} THEN ${TipoFornecedor} ELSE F.fisjur END
+               ORDER BY IDFOR
+            `;
+        
+            return relFornecedoresCad;
+        });
 
 
 }
