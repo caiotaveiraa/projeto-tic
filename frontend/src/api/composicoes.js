@@ -1,6 +1,6 @@
 export const buscaComposicoes = async () => {
     try {
-      const resp = await fetch(`http://localhost:3333/composicoes`);
+      const resp = await fetch(`http://localhost:3333/composicao`);
       if (resp.ok) {
         const composicoes = await resp.json();
         return composicoes;

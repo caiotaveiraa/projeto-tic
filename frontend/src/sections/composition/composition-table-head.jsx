@@ -11,7 +11,7 @@ import { visuallyHidden } from './utils';
 
 // ----------------------------------------------------------------------
 
-export default function ProductTableHead({
+export default function CompositionTableHead({
   order,
   orderBy,
   rowCount,
@@ -62,7 +62,7 @@ export default function ProductTableHead({
   );
 }
 
-ProductTableHead.propTypes = {
+CompositionTableHead.propTypes = {
   order: PropTypes.oneOf(['asc', 'desc']),
   orderBy: PropTypes.string,
   rowCount: PropTypes.number,

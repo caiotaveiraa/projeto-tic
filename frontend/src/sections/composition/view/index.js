@@ -1,1 +1,1 @@
-export { default as CompositionView } from './product-view';
+export { default as CompositionView } from './composition-view';

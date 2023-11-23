@@ -14,16 +14,16 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function ProductTableRow({
+export default function CompositionTableRow({
   selected,
-  nomeprod,
-  idtipprod,
-  idunidade,
-  quantminima,
-  handleClick,
   idproduto,
-  onDeleteProduct,
-  onEditProduct,
+  nomeprod,
+  idprodutocomp,
+  nomeprodcomp,
+  quantidade,
+  handleClick,
+  onDeleteComposition,
+  onEditComposition,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -35,17 +35,17 @@ export default function ProductTableRow({
     setOpen(null);
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteComposition = async (id) => {
     const confirmacao = window.confirm("Tem certeza que deseja deletar o produto?");
     // Se o usuário clicou em "OK", chama a função de deletar
     if (confirmacao) {
-      onDeleteProduct(id);
+      onDeleteComposition(id);
     }
     handleCloseMenu()
   }
-  const handleEditProduct = async (id) => {
+  const handleEditComposition = async (id) => {
     console.log(id)
-    onEditProduct(idproduto)
+    onEditComposition(idproduto)
     handleCloseMenu()
   }
 
@@ -66,11 +66,11 @@ export default function ProductTableRow({
           </Stack>
         </TableCell>
 
-        <TableCell align='justify'>{idtipprod}</TableCell>
+        <TableCell align='justify'>{idprodutocomp}</TableCell>
 
-        <TableCell align='justify'>{quantminima}</TableCell>
+        <TableCell align='justify'>{nomeprodcomp}</TableCell>
 
-        <TableCell align='justify'>{idunidade}</TableCell>
+        <TableCell align='justify'>{quantidade}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -89,12 +89,12 @@ export default function ProductTableRow({
           sx: { width: 140 },
         }}
         >
-        <MenuItem onClick={() => handleEditProduct(idproduto)}>
+        <MenuItem onClick={() => handleEditComposition(idproduto)}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Editar
         </MenuItem>
 
-        <MenuItem onClick={() => handleDeleteProduct(idproduto)} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleDeleteComposition(idproduto)} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Deletar
         </MenuItem>
@@ -103,14 +103,14 @@ export default function ProductTableRow({
   );
 }
 
-ProductTableRow.propTypes = {
+CompositionTableRow.propTypes = {
   idproduto: PropTypes.any,
   nomeprod: PropTypes.any,
+  idprodutocomp: PropTypes.any,
+  nomeprodcomp: PropTypes.any,
+  quantidade: PropTypes.any,
   handleClick: PropTypes.func,
-  quantminima: PropTypes.any,
-  idtipprod: PropTypes.any,
-  idunidade: PropTypes.any,
   selected: PropTypes.any,
-  onDeleteProduct: PropTypes.func,
-  onEditProduct: PropTypes.func,
+  onDeleteComposition: PropTypes.func,
+  onEditComposition: PropTypes.func,
 };

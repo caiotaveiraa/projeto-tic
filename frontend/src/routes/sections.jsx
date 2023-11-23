@@ -18,7 +18,7 @@ export const EntryPage = lazy(() => import('src/pages/entry'))
 export const NfPage = lazy(() => import('src/pages/nf'))
 export const Relatorios = lazy(() => import('src/pages/relatorios'))
 export const ProductTypePage = lazy(() => import('src/pages/product-type'))
-export const CompositionPage = lazy((import('src/pages/composition')))
+export const CompositionPage = lazy(() => import('src/pages/composition'))
 
 // ----------------------------------------------------------------------
 

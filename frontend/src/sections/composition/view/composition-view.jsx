@@ -13,17 +13,17 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novoProduto, buscaProdutos, deletaProdutos } from 'src/api/produtos';
+import { novaComposicao, buscaComposicoes, deletaComposicoes } from 'src/api/composicoes';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
 import TableEmptyRows from '../table-empty-rows';
-import ProducTableRow from '../product-table-row';
-import ProductTableHead from '../product-table-head';
-import ProductTableToolbar from '../product-table-toolbar';
+import CompositionTableRow from '../composition-table-row';
+import CompositionTableHead from '../composition-table-head';
 import { emptyRows, applyFilter, getComparator } from '../utils';
+import CompositionTableToolbar from '../composition-table-toolbar';
 
 
 // ----------------------------------------------------------------------
@@ -52,34 +52,32 @@ export default function CompositionPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [produtosArray, setProdutosArray] = useState([]);
-  const [produtosCarregados, setProdutosCarregados] = useState(false);
+  const [composicoesArray, setcomposicoesArray] = useState([]);
+  const [composicoesCarregadas, setcomposicoesCarregadas] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   const [idproduto, setIdProduto] = useState(0)
-  const [nomeprod, setnomeprod] = useState('')
-  const [idtipprod, setIdTIpProd] = useState(0)
-  const [idunidade, setIdUnidade] = useState(0)
-  const [quantminima, setQuantMinima] = useState(0)
+  const [idprodutocomp, setIdProdutoComp] = useState(0)
+  const [quantidade, setQuantidade] = useState(0)
 
-  async function obterProdutos() {
+  async function obterComposicoes() {
     try {
-      const produtos = await buscaProdutos();
-      setProdutosArray(produtos);
-      setProdutosCarregados(true);
+      const composicoes = await buscaComposicoes();
+      setcomposicoesArray(composicoes);
+      setcomposicoesCarregadas(true);
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
   }
 
   useEffect(() => {
-    if (!produtosCarregados) {
-      obterProdutos();
+    if (!composicoesCarregadas) {
+      obterComposicoes();
     }
-  }, [produtosCarregados]);
+  }, [composicoesCarregadas]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -91,7 +89,7 @@ export default function CompositionPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = produtosArray.map((n) => n.nomeprod);
+      const newSelecteds = composicoesArray.map((n) => n.nomeprod);
       setSelected(newSelecteds);
       return;
     }
@@ -130,13 +128,13 @@ export default function CompositionPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteComposicao = async (id) => {
     try {
-      const resp = await deletaProdutos(id)
+      const resp = await deletaComposicoes(id)
       console.log(resp)
       if (resp) {
         // REMOVE O PRODUTO EXCLUIDO 
-        setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+        setcomposicoesArray((prevComposicoes) => prevComposicoes.filter((composicao) => composicao.idcomp !== id));
       }
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
@@ -144,12 +142,10 @@ export default function CompositionPage() {
   }
   const handleEditProduct = (id) => {
     console.log('Entrou')
-    const produtoEditado = produtosArray.find(item => item.idproduto === id)
-    setIdProduto(produtoEditado.idproduto)
-    setnomeprod(produtoEditado.nomeprod)
-    setIdTIpProd(produtoEditado.idtipprod)
-    setIdUnidade(produtoEditado.idunidade)
-    setQuantMinima(produtoEditado.quantminima)
+    const composicaoEditada = composicoesArray.find(item => item.idcomp === id)
+    setIdProduto(composicaoEditada.idproduto)
+    setIdProdutoComp(composicaoEditada.idprodutocomp)
+    setQuantidade(composicaoEditada.quantidade)
     setOpen(true)
   }
 
@@ -160,43 +156,40 @@ export default function CompositionPage() {
       if(isInsercao) // insercao
       {
         formData = {
-        nomeprod,
-        idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
-        idunidade: parseInt(idunidade, 10), // Converte para inteiro
-        quantminima: parseFloat(quantminima),
+        idproduto: parseInt(idproduto, 10),
+        idprodutocomp: parseInt(idprodutocomp, 10), // Converte para inteiro
+        quantidade: parseInt(quantidade, 10), // Converte para inteiro
         }
       }
       else // Atualizacao
       {
         formData = {
-          idproduto,
-          nomeprod,
-          idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
-          idunidade: parseInt(idunidade, 10), // Converte para inteiro
-          quantminima: parseFloat(quantminima),
+          idcomp: parseInt(idproduto, 10),
+          idproduto: parseInt(idproduto, 10),
+          idprodutocomp: parseInt(idprodutocomp, 10), // Converte para inteiro
+          quantidade: parseInt(quantidade, 10), // Converte para inteiro
         }
       }
       console.log('Criando')
       console.log(formData)
       console.log(idproduto)
-      const produtonovo = JSON.stringify(formData)
+      const composicaonova = JSON.stringify(formData)
       try {
-        const resp = await novoProduto(produtonovo, isInsercao);
-        setProdutosArray([...produtosArray, resp]);
-        obterProdutos();
-        setnomeprod('');
-        setIdTIpProd(0);
-        setIdUnidade(0);
-        setQuantMinima(0);
+        const resp = await novaComposicao(composicaonova, isInsercao);
+        setcomposicoesArray([...composicoesArray, resp]);
+        obterComposicoes();
+        setIdProduto(0)
+        setIdProdutoComp(0)
+        setQuantidade(0)
       } catch (erro) {
         console.error("Ocorreu um erro:", erro);
       }
       handleClose()
-      console.log(produtosArray)
+      console.log(composicoesArray)
   }
 
   const dataFiltered = applyFilter({
-    inputData: produtosArray,
+    inputData: composicoesArray,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -214,28 +207,21 @@ export default function CompositionPage() {
         <Box sx={style}>
           <form onSubmit={handleCreate}>
             <TextField 
-              name="name" label="Nome" 
-              value={nomeprod}
-              onChange={(e) => setnomeprod(e.target.value)}
+              name="idproduto" label="Id do Produto" 
+              value={idproduto}
+              onChange={(e) => setIdProduto(e.target.value)}
               sx={{ marginBottom: 2 }}
             />
             <TextField 
-              name="idtipprod" label="Id do tipo de produto" 
-              value={idtipprod}
-              onChange={(e) => setIdTIpProd(e.target.value)}
+              name="idprodutocomp" label="Id do Produto Composto" 
+              value={idprodutocomp}
+              onChange={(e) => setIdProdutoComp(e.target.value)}
               sx={{ marginBottom: 2 }}
             />
             <TextField 
-              name="idunidade" label="Id da Unidade de Medida" 
-              value={idunidade}
-              onChange={(e) => setIdUnidade(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <TextField 
-              type='number'
-              name="quantminima" label="Quantidade minima" 
-              value={quantminima}
-              onChange={(e) => setQuantMinima(e.target.value)}
+              name="quantidade" label="Quantidade" 
+              value={quantidade}
+              onChange={(e) => setQuantidade(e.target.value)}
               sx={{ marginBottom: 2 }}
             />
             <Box
@@ -266,15 +252,15 @@ export default function CompositionPage() {
         </Box>
       </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Produtos</Typography>
+        <Typography variant="h4">Composições</Typography>
 
         <Button onClick={() => { handleOpen(); setIdProduto(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Novo produto
+          Nova Composição
         </Button>
       </Stack>
 
       <Card>
-        <ProductTableToolbar
+        <CompositionTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -283,19 +269,19 @@ export default function CompositionPage() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <ProductTableHead
+              <CompositionTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={produtosArray.length}
+                rowCount={composicoesArray.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'id', label: 'Id' },
-                  { id: 'nome', label: 'Nome' },
-                  { id: 'idtipprod', label: 'Tipo de Produto' },
-                  { id: 'quantminima', label: 'Quantidade Minima'},
-                  { id: 'idunidade', label: 'Unidade de Medida' },
+                  { id: 'idproduto', label: 'Id Produto' },
+                  { id: 'nomeprod', label: 'Nome Produto' },
+                  { id: 'idprodutocomp', label: 'Id Produto Composto' },
+                  { id: 'nomeprodcomp', label: 'Nome Produto Composto'},
+                  { id: 'quantidade', label: 'Quantidade' },
                   { id: '' },
                 ]}
               />
@@ -303,23 +289,23 @@ export default function CompositionPage() {
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
-                    <ProducTableRow
-                      key={row.idproduto}
+                    <CompositionTableRow
+                      key={row.idcomp}
                       idproduto={row.idproduto}
-                      nomeprod={row.nomeprod}
-                      idtipprod={row.tbtiposprodutos.nometipprod}
-                      idunidade={row.tbunidademedida.siglaun}
-                      quantminima={row.quantminima}
+                      nomeprod={row.tbprodutos_tbprodcomposicao_idprodutoTotbprodutos.nomeprod}
+                      idprodutocomp={row.idprodutocomp}
+                      nomeprodcomp={row.tbprodutos_tbprodcomposicao_idprodutocompTotbprodutos.nomeprod}
+                      quantidade={row.quantidade}
                       selected={selected.indexOf(row.nomeprod) !== -1}
                       handleClick={(event) => handleClick(event, row.nomeprod)}
-                      onDeleteProduct={handleDeleteProduct}
-                      onEditProduct={handleEditProduct}
+                      onDeleteComposition={handleDeleteComposicao}
+                      onEditComposition={handleEditProduct}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, produtosArray.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, composicoesArray.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -331,7 +317,7 @@ export default function CompositionPage() {
         <TablePagination
           page={page}
           component="div"
-          count={produtosArray.length}
+          count={composicoesArray.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
