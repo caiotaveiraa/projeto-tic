@@ -20,7 +20,6 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { getNomeUsuario } from 'src/api/nomeusuario';
 import { modificarItens } from 'src/api/movimentositens';
-import { gerarRelatorioSaldoEstoquePDF } from 'src/api/relatorios';
 import { novoMovimento, buscaMovimentos, deletaMovimento } from 'src/api/movimentos';
 
 import Iconify from 'src/components/iconify';
@@ -453,10 +452,6 @@ export default function EntryPage() {
       </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
         <Typography variant="h4">Movimentações</Typography>
-
-        <Button onClick={() => { gerarRelatorioSaldoEstoquePDF(0,0) }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Relatorio
-        </Button>
 
         <Button onClick={() => { handleOpen(); handleClear(); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
           Nova Movimentação

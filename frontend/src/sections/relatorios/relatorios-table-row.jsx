@@ -17,7 +17,6 @@ export default function LocalTableRow({
   handleClick,
   onGerarRel,
 }) {
-  
 
     const handleGerarRelatorio = async (id) => {
       console.log(id)
@@ -41,9 +40,13 @@ export default function LocalTableRow({
           </TableCell>
   
           <TableCell align="right">
-          <IconButton onClick={() => handleGerarRelatorio(indice)}>
-              TESTE
-            </IconButton>
+          <IconButton
+          onClick={() => handleGerarRelatorio(indice)}
+          sx={{backgroundColor: '#98FB98', color: 'black','&:hover': {backgroundColor: '#98FB98',}, borderRadius: 10,  fontSize: '18px', }}
+          
+        >
+          Filtrar Relatório
+        </IconButton>
           </TableCell>
         </TableRow>
     );

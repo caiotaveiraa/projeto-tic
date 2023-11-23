@@ -6,15 +6,20 @@ import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { gerarRelatorioFornecedorPDF, gerarRelatorioSaldoEstoquePDF, gerarRelatorioMovimentacoesPDF } from 'src/api/relatorios';
 
+import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
@@ -77,15 +82,22 @@ export default function LocalPage() {
   // Estados e funções relacionadas à Modal 3
   const [openModal3, setOpenModal3] = useState(false);
   const [idFornecedorModal3, setIdFornecedorModal3] = useState('');
-  const [fisJur, setFisJur] = useState('');
+  const [fisJur, setFisJur] = useState('0');
 
-  const handleOpenModal3 = () => setOpenModal3(true);
+  const   handleOpenModal3 = () => setOpenModal3(true);
   const handleCloseModal3 = () => setOpenModal3(false);
+  
+  const handleTipoMovChange = (event) => {
+    setTipoMov(event.target.value);
+  };
 
+  const handleTipoPessoaChange = (event) => {
+    setFisJur(event.target.value);
+  };
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
-    if (id !== '') {
+    if (id !== '') {    
       setOrder(isAsc ? 'desc' : 'asc');
       setOrderBy(id);
     }
@@ -136,39 +148,60 @@ export default function LocalPage() {
   const handleGerarRelatorio = async (id) => {
     // Lógica para determinar qual modal abrir com base no ID
     if (id === 1) {
+      initializeModal1();
       handleOpenModal1();
     } else if (id === 2) {
+      initializeModal2();
       handleOpenModal2();
     } else if (id === 3) {
+      initializeModal3();
       handleOpenModal3();
     }
   };
 
   const handleFiltrarModal1 = async () => {
-    const idProdutoParam = idProduto ?? 0;
-    const idLocalestoqueParam = idLocalestoque ?? 0;
+    const idProdutoParam = idProduto?.trim() ||'0';
+    const idLocalestoqueParam = idLocalestoque?.trim() || '0';
   
     gerarRelatorioSaldoEstoquePDF(idProdutoParam, idLocalestoqueParam);
     handleCloseModal1();
   };
   
   const handleFiltrarModal2 = async () => {
-    const tipoMovParam = tipoMov ?? '0';
-    const idMovimentoParam = idMovimento ?? 0;
-    const idFornecedorParam = idFornecedorModal2 ?? 0;
-  
+    const tipoMovParam = tipoMov?.trim() || '0';
+    const idMovimentoParam = idMovimento?.trim() || '0';
+    const idFornecedorParam = idFornecedorModal2?.trim() || '0';
+    
     gerarRelatorioMovimentacoesPDF(tipoMovParam, idMovimentoParam, idFornecedorParam);
     handleCloseModal2();
   };
   
   const handleFiltrarModal3 = async () => {
-    const idFornecedorParam = idFornecedorModal3 ?? 0;
-    const fisJurParam = fisJur ?? '0';
+    const idFornecedorParam = idFornecedorModal3?.trim() || '0';
+    const fisJurParam = fisJur?.trim() || '0';
   
     gerarRelatorioFornecedorPDF(idFornecedorParam, fisJurParam);
     handleCloseModal3();
   };
   
+  const initializeModal1 = () => {
+    setIdProduto('');
+    setIdLocalestoque('');
+  };
+
+  const initializeModal2 = () => {
+    setTipoMov('0'); 
+    setIdMovimento('');
+    setIdFornecedorModal2('');
+    
+    setFisJur('0');
+    setIdFornecedorModal3('');
+  };
+
+  const initializeModal3 = () => {
+    setFisJur('0');
+    setIdFornecedorModal3('');
+  };
 
 
   const dataFiltered = applyFilter({
@@ -191,19 +224,32 @@ export default function LocalPage() {
       <Box sx={style}>
         <form onSubmit={handleFiltrarModal1}>
           <TextField
-            label="ID do Produto"
+            label="Cód. do Produto"
             value={idProduto}
             onChange={(e) => setIdProduto(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
           <TextField
-            label="ID do Local de Estoque"
+            label="Cód. Local Estoque"
             value={idLocalestoque}
             onChange={(e) => setIdLocalestoque(e.target.value)}
             sx={{ marginBottom: 2 }}
           />
-          <Button type="submit" variant="contained" color="inherit">
-            Filtrar e Gerar PDF
+           <Button 
+                onClick={handleCloseModal1 } 
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:cancel" />}
+                sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
+                Cancelar
+          </Button>
+          <Button 
+                type='submit'
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:save" />}
+                sx={{ backgroundColor: '#98FB98', color: 'black' }}>
+                Filtrar e Gerar PDF
           </Button>
         </form>
       </Box>
@@ -218,27 +264,49 @@ export default function LocalPage() {
     >
       <Box sx={style}>
         <form onSubmit={handleFiltrarModal2}>
+        <FormControl fullWidth sx={{ marginBottom: 2 }}>
+        <InputLabel id="tipoMov-label">Tipo de Movimento</InputLabel>
+        <Select
+          labelId="tipoMov-label"
+          id="tipoMov"
+          value={tipoMov}
+          label="Tipo de Movimento"
+          onChange={handleTipoMovChange}
+        >
+          <MenuItem value="0">Ambos</MenuItem>
+          <MenuItem value="1">Entradas</MenuItem>
+          <MenuItem value="2">Saídas</MenuItem>
+        </Select>
+      </FormControl>
           <TextField
-            label="Tipo de Movimento"
-            value={tipoMov}
-            onChange={(e) => setTipoMov(e.target.value)}
-            sx={{ marginBottom: 2 }}
-          />
-          <TextField
-            label="ID do Movimento"
+            label="Cód. do Movimento"
             value={idMovimento}
             onChange={(e) => setIdMovimento(e.target.value)}
-            sx={{ marginBottom: 2 }}
+            fullWidth sx={{ marginBottom: 2 }}
           />
           <TextField
-            label="ID do Fornecedor"
+            label="Cód. do Fornecedor"
             value={idFornecedorModal2}
             onChange={(e) => setIdFornecedorModal2(e.target.value)}
-            sx={{ marginBottom: 2 }}
+            fullWidth sx={{ marginBottom: 2 }}
           />
-          <Button type="submit" variant="contained" color="inherit">
-            Filtrar e Gerar PDF
+          <Button 
+                onClick={handleCloseModal2} 
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:cancel" />}
+                sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
+                Cancelar
           </Button>
+          <Button 
+                type='submit'
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:save" />}
+                sx={{ backgroundColor: '#98FB98', color: 'black' }}>
+                Filtrar e Gerar PDF
+          </Button>
+
         </form>
       </Box>
     </Modal>
@@ -253,20 +321,42 @@ export default function LocalPage() {
       <Box sx={style}>
         <form onSubmit={handleFiltrarModal3}>
           <TextField
-            label="ID do Fornecedor"
+            label="Cód. do Fornecedor"
             value={idFornecedorModal3}
             onChange={(e) => setIdFornecedorModal3(e.target.value)}
-            sx={{ marginBottom: 2 }}
+            fullWidth sx={{ marginBottom: 2 }}
           />
-          <TextField
-            label="Tipo (Física/Jurídica)"
-            value={fisJur}
-            onChange={(e) => setFisJur(e.target.value)}
-            sx={{ marginBottom: 2 }}
-          />
-          <Button type="submit" variant="contained" color="inherit">
-            Filtrar e Gerar PDF
+          <FormControl fullWidth sx={{ marginBottom: 1 }}>
+            <InputLabel id="tipoPessoa-label">Tipo de Pessoa</InputLabel>
+            <Select
+              labelId="tipoPessoa-label"
+              id="tipoPessoa"
+              value={fisJur}
+              label="Tipo de Pessoa"
+              onChange={handleTipoPessoaChange}
+            >
+              <MenuItem value="0">Ambos</MenuItem>
+              <MenuItem value="1">Jurídica</MenuItem>
+              <MenuItem value="2">Física</MenuItem>
+            </Select>
+          </FormControl>
+          <Button 
+                onClick={handleCloseModal3} 
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:cancel" />}
+                sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
+                Cancelar
           </Button>
+          <Button 
+                type='submit'
+                variant="contained" 
+                color="inherit" 
+                startIcon={<Iconify icon="material-symbols:save" />}
+                sx={{ backgroundColor: '#98FB98', color: 'black' }}>
+                Filtrar e Gerar PDF
+          </Button>
+
         </form>
       </Box>
     </Modal>
@@ -295,8 +385,8 @@ export default function LocalPage() {
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
-                  { id: 'id', label: 'Id' },
-                  { id: 'nomeLocal', label: 'Nome Local de Estoque' },
+                  { id: 'indice', label: 'Indice' },
+                  { id: 'nome', label: 'Modelo do Relatório' },
                   { id: '' },
                 ]}
               />
