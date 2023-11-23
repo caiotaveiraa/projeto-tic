@@ -6,7 +6,20 @@ export async function compositionController(server: FastifyInstance) {
 //CRUD TB PROD COMPOSICAO
 
 server.get('/composicao', async () => {
-    const composicoes = await prisma.tbprodcomposicao.findMany()
+    const composicoes = await prisma.tbprodcomposicao.findMany({
+        include: {
+            tbprodutos_tbprodcomposicao_idprodutoTotbprodutos: {
+                select: {
+                    nomeprod: true
+                }
+            },
+            tbprodutos_tbprodcomposicao_idprodutocompTotbprodutos: {
+                select: {
+                    nomeprod: true
+                }
+            }
+        }
+    })
     return composicoes
 })
 
@@ -49,7 +62,7 @@ server.post('/composicao/add', async (request) => {
     }
 })
 
-server.put('/compsicao/update', async (request) => {
+server.put('/composicao/update', async (request) => {
     const putBody = z.object({
         idcomp: z.number(),
         idproduto: z.number(),

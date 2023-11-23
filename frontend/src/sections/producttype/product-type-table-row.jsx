@@ -14,15 +14,13 @@ import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export default function UserTableRow({
+export default function ProductTypeTableRow({
   selected,
-  idusuario,
-  usu_login,
-  nome,
-  usu_admin,
-  dtcriacao,
+  idtipprod,
+  nometipprod,
   handleClick,
-  onDeleteUser,
+  onDeleteTipo,
+  onEditTipo,
 }) {
   const [open, setOpen] = useState(null);
 
@@ -34,12 +32,17 @@ export default function UserTableRow({
     setOpen(null);
   };
 
-  const handleDeleteUser = async (id) => {
-    const confirmacao = window.confirm("Tem certeza que deseja deletar o usuário?");
+  const handleDeleteTipo = async (id) => {
+    const confirmacao = window.confirm("Tem certeza que deseja deletar o tipo de produto?");
     // Se o usuário clicou em "OK", chama a função de deletar
     if (confirmacao) {
-    onDeleteUser(id)
+      onDeleteTipo(id);
     }
+    handleCloseMenu()
+  }
+  const handleEditTipo = async (id) => {
+    console.log(id)
+    onEditTipo(id)
     handleCloseMenu()
   }
 
@@ -50,21 +53,15 @@ export default function UserTableRow({
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell>
 
-        <TableCell>{idusuario}</TableCell>
+        <TableCell>{idtipprod}</TableCell>
 
         <TableCell component="th" scope="row" padding="none">
           <Stack direction="row" alignItems="center" spacing={2}>
             <Typography variant="subtitle2" noWrap>
-              {usu_login}
+              {nometipprod}
             </Typography>
           </Stack>
         </TableCell>
-
-        <TableCell align='justify'>{nome}</TableCell>
-
-        <TableCell align='justify'>{usu_admin ? 'Sim' : 'Não'}</TableCell>
-
-        <TableCell align='justify'>{dtcriacao}</TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -83,8 +80,12 @@ export default function UserTableRow({
           sx: { width: 140 },
         }}
         >
+        <MenuItem onClick={() => handleEditTipo(idtipprod)}>
+          <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
+          Editar
+        </MenuItem>
 
-        <MenuItem onClick={() => handleDeleteUser(idusuario)} sx={{ color: 'error.main' }}>
+        <MenuItem onClick={() => handleDeleteTipo(idtipprod)} sx={{ color: 'error.main' }}>
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Deletar
         </MenuItem>
@@ -93,14 +94,11 @@ export default function UserTableRow({
   );
 }
 
-UserTableRow.propTypes = {
-  idusuario: PropTypes.any,
-  usu_login: PropTypes.any,
-  nome: PropTypes.any,
-  usu_admin: PropTypes.any,
-  dtcriacao: PropTypes.any,
+ProductTypeTableRow.propTypes = {
+  idtipprod: PropTypes.any,
   handleClick: PropTypes.func,
+  nometipprod: PropTypes.any,
   selected: PropTypes.any,
-  onDeleteUser: PropTypes.func,
+  onDeleteTipo: PropTypes.func,
+  onEditTipo: PropTypes.func,
 };
-

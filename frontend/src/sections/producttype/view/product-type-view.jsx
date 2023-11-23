@@ -13,17 +13,17 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novaUnidade, buscaUnidades, deletaUnidade } from 'src/api/unidademedida';
+import { novoTipo, buscaTipos, deletaTipo } from 'src/api/tiposprodutos';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 
 import TableNoData from '../table-no-data';
 import TableEmptyRows from '../table-empty-rows';
-import MeasureUnitTableRow from '../measure-unit-table-row';
-import MeasureUnitTableHead from '../measure-unit-table-head';
+import ProducTypeTableRow from '../product-type-table-row';
+import ProducTypeTableHead from '../product-type-table-head';
 import { emptyRows, applyFilter, getComparator } from '../utils';
-import MeasureUnitTableToolbar from '../measure-unit-table-toolbar';
+import ProducTypeTableToolbar from '../product-type-table-toolbar';
 
 // ----------------------------------------------------------------------
 
@@ -38,7 +38,7 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function MeasureUnitPage() {
+export default function ProductTypePage() {
   const [page, setPage] = useState(0);
 
   const [order, setOrder] = useState('asc');
@@ -51,32 +51,31 @@ export default function MeasureUnitPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [unidadesArray, setunidadesArray] = useState([]);
-  const [unidadesCarregadas, setunidadesCarregadas] = useState(false);
+  const [tiposArray, settiposArray] = useState([]);
+  const [tiposCarregados, settiposCarregados] = useState(false);
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [idunidade, setidunidade] = useState(0)
-  const [siglaun, setsiglaun] = useState('')
-  const [nomeunidade, setnomeunidade] = useState('')
+  const [idtipprod, setidtipprod] = useState(0)
+  const [nometipprod, setnometipprod] = useState('')
 
-  async function obterUnidades() {
+  async function obterTipos() {
     try {
-      const unidades = await buscaUnidades();
-      setunidadesArray(unidades);
-      setunidadesCarregadas(true);
+      const unidades = await buscaTipos();
+      settiposArray(unidades);
+      settiposCarregados(true);
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
   }
 
   useEffect(() => {
-    if (!unidadesCarregadas) {
-      obterUnidades();
+    if (!tiposCarregados) {
+      obterTipos();
     }
-  }, [unidadesCarregadas]);
+  }, [tiposCarregados]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -88,7 +87,7 @@ export default function MeasureUnitPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = unidadesArray.map((n) => n.nomeunidade);
+      const newSelecteds = tiposArray.map((n) => n.nometipprod);
       setSelected(newSelecteds);
       return;
     }
@@ -127,66 +126,67 @@ export default function MeasureUnitPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteUnit = async (id) => {
+  const handleDeleteTipo = async (id) => {
     try {
-      const resp = await deletaUnidade(id)
+      const resp = await deletaTipo(id)
       console.log(resp)
       if (resp) {
         // REMOVE A UNIDADE EXCLUIDA
-        setunidadesArray((prevUnidades) => prevUnidades.filter((unidade) => unidade.idunidade !== id));
+        settiposArray((prevUnidades) => prevUnidades.filter((unidade) => unidade.idtipprod !== id));
       }
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
   }
-  const handleEditUnit = (id) => {
+  const handleEditTipo = (id) => {
     console.log('Entrou')
-    const unidadeEditada = unidadesArray.find(item => item.idunidade === id)
-    setidunidade(unidadeEditada.idunidade)
-    setsiglaun(unidadeEditada.siglaun)
-    setnomeunidade(unidadeEditada.nomeunidade)
+    const tipoEditado = tiposArray.find(item => item.idtipprod === id)
+    setidtipprod(tipoEditado.idtipprod)
+    setnometipprod(tipoEditado.nometipprod)
     setOpen(true)
   }
 
-    const handleCreate = async (e) => {
-      e.preventDefault(); // Impede o comportamento padrão de envio do formulário
-      const isInsercao = idunidade === 0
-      let formData
-      if(isInsercao) // insercao
-      {
-        formData = {
-        siglaun,
-        nomeunidade, // Converte para inteiro
-        }
+  const handleCreate = async (e) => {
+    e.preventDefault(); // Impede o comportamento padrão de envio do formulário
+    const isInsercao = idtipprod === 0
+    let formData
+    if (isInsercao) // insercao
+    {
+      formData = {
+        nometipprod, // Converte para inteiro
       }
-      else // Atualizacao
-      {
-        formData = {
-          idunidade,
-          siglaun,
-          nomeunidade,
-        }
+    }
+    else // Atualizacao
+    {
+      formData = {
+        idtipprod,
+        nometipprod,
       }
-      console.log('Criando')
-      console.log(formData)
-      console.log(idunidade)
-      const unidadenova = JSON.stringify(formData)
-      try {
-        const resp = await novaUnidade(unidadenova, isInsercao);
-        setunidadesArray([...unidadesArray, resp]);
-        obterUnidades();
-        setsiglaun('');
-        setnomeunidade('');
-        setidunidade(0);
-      } catch (erro) {
-        console.error("Ocorreu um erro:", erro);
-      }
-      handleClose()
-      console.log(unidadesArray)
+    }
+    console.log('Criando')
+    console.log(formData)
+    console.log(idtipprod)
+    const tiponovo = JSON.stringify(formData)
+    try {
+      const resp = await novoTipo(tiponovo, isInsercao);
+      settiposArray([...tiposArray, resp]);
+      obterTipos();
+      setnometipprod('');
+      setidtipprod(0);
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
+    handleClose()
+    console.log(tiposArray)
+  }
+
+  const handleClear = () => {
+    setnometipprod('')
+    setidtipprod(0)
   }
 
   const dataFiltered = applyFilter({
-    inputData: unidadesArray,
+    inputData: tiposArray,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -203,16 +203,10 @@ export default function MeasureUnitPage() {
       >
         <Box sx={style}>
           <form onSubmit={handleCreate}>
-            <TextField 
-              name="name" label="Sigla da unidade" 
-              value={siglaun}
-              onChange={(e) => setsiglaun(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <TextField 
-              name="nomeunidade" label="Nome da unidade" 
-              value={nomeunidade}
-              onChange={(e) => setnomeunidade(e.target.value)}
+            <TextField
+              name="nometipprod" label="Nome do Tipo"
+              value={nometipprod}
+              onChange={(e) => setnometipprod(e.target.value)}
               sx={{ marginBottom: 2 }}
             />
             <Box
@@ -222,36 +216,36 @@ export default function MeasureUnitPage() {
                 marginTop: 2, // Adiciona margem na parte superior dos botões
               }}
             >
-              <Button 
-                onClick={handleClose} 
-                variant="contained" 
-                color="inherit" 
+              <Button
+                onClick={handleClose}
+                variant="contained"
+                color="inherit"
                 startIcon={<Iconify icon="material-symbols:cancel" />}
                 sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
                 Cancelar
               </Button>
-              <Button 
+              <Button
                 type='submit'
-                variant="contained" 
-                color="inherit" 
+                variant="contained"
+                color="inherit"
                 startIcon={<Iconify icon="material-symbols:save" />}
                 sx={{ backgroundColor: '#98FB98', color: 'black' }}>
                 Salvar
               </Button>
-          </Box>
+            </Box>
           </form>
         </Box>
       </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Unidades de Medida</Typography>
+        <Typography variant="h4">Tipos de Produtos</Typography>
 
-        <Button onClick={() => { handleOpen(); setidunidade(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Nova Unidade
+        <Button onClick={() => { handleOpen(); handleClear(); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          Novo Tipo
         </Button>
       </Stack>
 
       <Card>
-        <MeasureUnitTableToolbar
+        <ProducTypeTableToolbar
           numSelected={selected.length}
           filterName={filterName}
           onFilterName={handleFilterByName}
@@ -260,17 +254,16 @@ export default function MeasureUnitPage() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <MeasureUnitTableHead
+              <ProducTypeTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={unidadesArray.length}
+                rowCount={tiposArray.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'id', label: 'Id' },
-                  { id: 'siglaun', label: 'Sigla da Unidade' },
-                  { id: 'nomeunidade', label: 'Nome da Unidade' },
+                  { id: 'nometipprod', label: 'Nome do Tipo' },
                   { id: '' },
                 ]}
               />
@@ -278,21 +271,20 @@ export default function MeasureUnitPage() {
                 {dataFiltered
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
-                    <MeasureUnitTableRow
-                      key={row.idunidade}
-                      idunidade={row.idunidade}
-                      siglaun={row.siglaun}
-                      nomeunidade={row.nomeunidade}
+                    <ProducTypeTableRow
+                      key={row.idtipprod}
+                      idtipprod={row.idtipprod}
+                      nometipprod={row.nometipprod}
                       selected={selected.indexOf(row.siglaun) !== -1}
                       handleClick={(event) => handleClick(event, row.siglaun)}
-                      onDeleteUnidade={handleDeleteUnit}
-                      onEditUnidade={handleEditUnit}
+                      onDeleteTipo={handleDeleteTipo}
+                      onEditTipo={handleEditTipo}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, unidadesArray.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, tiposArray.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -304,7 +296,7 @@ export default function MeasureUnitPage() {
         <TablePagination
           page={page}
           component="div"
-          count={unidadesArray.length}
+          count={tiposArray.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}

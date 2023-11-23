@@ -499,7 +499,7 @@ export default function EntryPage() {
                       tipmov={row.tipmov}
                       idfor={row.tbfornecedores.nomefor}
                       idusuario_alteracao={row.tbusuarios.usu_login}
-                      data={row.dtinc}
+                      dtinc={row.dtinc}
                       selected={selected.indexOf(row.tipmov) !== -1}
                       handleClick={(event) => handleClick(event, row.tipmov)}
                       onDeleteEntry={handleDeleteEntry}

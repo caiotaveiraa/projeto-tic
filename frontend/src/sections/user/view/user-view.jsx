@@ -1,19 +1,16 @@
 import { useState, useEffect } from 'react';
 
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import TableBody from '@mui/material/TableBody';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { novoProduto, buscaProdutos } from 'src/api/produtos';
+import { buscaUsuarios, deletaUsuario } from 'src/api/usuarios';
 
 import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
@@ -28,17 +25,6 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 // ----------------------------------------------------------------------
 
-const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: '#f7f7fa', // Defina a cor de fundo como cinza (substitua 'gray' pela cor desejada)
-  borderRadius: '8px', // Defina o raio das bordas para torná-las arredondadas
-  boxShadow: 24,
-  p: 4,
-};
 export default function UserPage() {
   const [page, setPage] = useState(0);
 
@@ -52,34 +38,32 @@ export default function UserPage() {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [produtosArray, setProdutosArray] = useState([]);
-  const [produtosCarregados, setProdutosCarregados] = useState(false);
+  const [usuariosArray, setusuariosArray] = useState([]);
+  const [usuariosCarregados, setusuariosCarregados] = useState(false);
 
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  /*
+  const [idusuario, setidusuario] = useState(0)
+  const [usu_login, setusu_login] = useState('')
+  const [nome, setnome] = useState('')
+  const [usu_admin, setusu_admin] = useState(false)
+  const [dtcriacao, setdtcriacao] = useState(new Date())
+  */
 
-  const [idproduto, setIdProduto] = useState(0)
-  const [nomeprod, setnomeprod] = useState('')
-  const [idtipprod, setIdTIpProd] = useState(0)
-  const [idunidade, setIdUnidade] = useState(0)
-  const [quantminima, setQuantMinima] = useState(0)
-
-  async function obterProdutos() {
+  async function obterUsuarios() {
     try {
-      const produtos = await buscaProdutos();
-      setProdutosArray(produtos);
-      setProdutosCarregados(true);
+      const usuarios = await buscaUsuarios();
+      setusuariosArray(usuarios);
+      setusuariosCarregados(true);
     } catch (erro) {
       console.error("Ocorreu um erro:", erro);
     }
   }
 
   useEffect(() => {
-    if (!produtosCarregados) {
-      obterProdutos();
+    if (!usuariosCarregados) {
+      obterUsuarios();
     }
-  }, [produtosCarregados]);
+  }, [usuariosCarregados]);
 
   const handleSort = (event, id) => {
     const isAsc = orderBy === id && order === 'asc';
@@ -91,7 +75,7 @@ export default function UserPage() {
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = produtosArray.map((n) => n.nomeprod);
+      const newSelecteds = usuariosArray.map((n) => n.usu_login);
       setSelected(newSelecteds);
       return;
     }
@@ -130,66 +114,25 @@ export default function UserPage() {
     setFilterName(event.target.value);
   };
 
-  const handleDeleteProduct = (id) => {
-    console.log('Entrou')
-    // Atualize o estado excluindo o produto com o ID correspondente
-    setProdutosArray((prevProdutos) => prevProdutos.filter((produto) => produto.idproduto !== id));
+  const handleDeleteUsuario = async (id) => {
+    try {
+      const resp = await deletaUsuario(id)
+      console.log(resp)
+      if (resp) {
+        // REMOVE O USUARIO EXCLUIDO 
+        setusuariosArray((prevUsers) => prevUsers.filter((user) => user.idusuario !== id));
+      }
+    } catch (erro) {
+      console.error("Ocorreu um erro:", erro);
+    }
   }
-  const handleEditProduct = (id) => {
-    console.log('Entrou')
-    const produtoEditado = produtosArray.find(item => item.idproduto === id)
-    setIdProduto(produtoEditado.idproduto)
-    setnomeprod(produtoEditado.nomeprod)
-    setIdTIpProd(produtoEditado.idtipprod)
-    setIdUnidade(produtoEditado.idunidade)
-    setQuantMinima(produtoEditado.quantminima)
-    setOpen(true)
-  }
-
+  /*
     const handleCreate = async (e) => {
-      e.preventDefault(); // Impede o comportamento padrão de envio do formulário
-      const isInsercao = idproduto === 0
-      let formData
-      if(isInsercao) // insercao
-      {
-        formData = {
-        nomeprod,
-        idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
-        idunidade: parseInt(idunidade, 10), // Converte para inteiro
-        quantminima: parseFloat(quantminima),
-        }
-      }
-      else // Atualizacao
-      {
-        formData = {
-          idproduto,
-          nomeprod,
-          idtipprod: parseInt(idtipprod, 10), // Converte para inteiro
-          idunidade: parseInt(idunidade, 10), // Converte para inteiro
-          quantminima: parseFloat(quantminima),
-        }
-      }
-      console.log('Criando')
-      console.log(formData)
-      console.log(idproduto)
-      const produtonovo = JSON.stringify(formData)
-      try {
-        const resp = await novoProduto(produtonovo, isInsercao);
-        setProdutosArray([...produtosArray, resp]);
-        obterProdutos();
-        setnomeprod('');
-        setIdTIpProd(0);
-        setIdUnidade(0);
-        setQuantMinima(0);
-      } catch (erro) {
-        console.error("Ocorreu um erro:", erro);
-      }
-      handleClose()
-      console.log(produtosArray)
   }
+  */
 
   const dataFiltered = applyFilter({
-    inputData: produtosArray,
+    inputData: usuariosArray,
     comparator: getComparator(order, orderBy),
     filterName,
   });
@@ -198,71 +141,11 @@ export default function UserPage() {
 
   return (
     <Container>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <form onSubmit={handleCreate}>
-            <TextField 
-              name="name" label="Nome" 
-              value={nomeprod}
-              onChange={(e) => setnomeprod(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <TextField 
-              name="idtipprod" label="Id do tipo de produto" 
-              value={idtipprod}
-              onChange={(e) => setIdTIpProd(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <TextField 
-              name="idunidade" label="Id da Unidade de Medida" 
-              value={idunidade}
-              onChange={(e) => setIdUnidade(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <TextField 
-              type='number'
-              name="quantminima" label="Quantidade minima" 
-              value={quantminima}
-              onChange={(e) => setQuantMinima(e.target.value)}
-              sx={{ marginBottom: 2 }}
-            />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                marginTop: 2, // Adiciona margem na parte superior dos botões
-              }}
-            >
-              <Button 
-                onClick={handleClose} 
-                variant="contained" 
-                color="inherit" 
-                startIcon={<Iconify icon="material-symbols:cancel" />}
-                sx={{ backgroundColor: '#FF6347', color: 'black', marginRight: 2 }}>
-                Cancelar
-              </Button>
-              <Button 
-                type='submit'
-                variant="contained" 
-                color="inherit" 
-                startIcon={<Iconify icon="material-symbols:save" />}
-                sx={{ backgroundColor: '#98FB98', color: 'black' }}>
-                Salvar
-              </Button>
-          </Box>
-          </form>
-        </Box>
-      </Modal>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-        <Typography variant="h4">Produtos</Typography>
+        <Typography variant="h4">Usuários</Typography>
 
-        <Button onClick={() => { handleOpen(); setIdProduto(0); }} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
-          Novo produto
+        <Button onClick={() => {}} variant="contained" color="inherit" startIcon={<Iconify icon="eva:plus-fill" />}>
+          Novo usuário
         </Button>
       </Stack>
 
@@ -279,16 +162,16 @@ export default function UserPage() {
               <UserTableHead
                 order={order}
                 orderBy={orderBy}
-                rowCount={produtosArray.length}
+                rowCount={usuariosArray.length}
                 numSelected={selected.length}
                 onRequestSort={handleSort}
                 onSelectAllClick={handleSelectAllClick}
                 headLabel={[
                   { id: 'id', label: 'Id' },
+                  { id: 'usu_login', label: 'Login' },
                   { id: 'nome', label: 'Nome' },
-                  { id: 'idtipprod', label: 'Tipo de Produto' },
-                  { id: 'quantminima', label: 'Quantidade Minima'},
-                  { id: 'idunidade', label: 'Unidade de Medida' },
+                  { id: 'usu_admin', label: 'Admin'},
+                  { id: 'dtcriacao', label: 'Data de Criação' },
                   { id: '' },
                 ]}
               />
@@ -297,22 +180,21 @@ export default function UserPage() {
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row) => (
                     <UserTableRow
-                      key={row.idproduto}
-                      idproduto={row.idproduto}
-                      nomeprod={row.nomeprod}
-                      idtipprod={row.tbtiposprodutos.nometipprod}
-                      idunidade={row.tbunidademedida.siglaun}
-                      quantminima={row.quantminima}
-                      selected={selected.indexOf(row.nomeprod) !== -1}
-                      handleClick={(event) => handleClick(event, row.nomeprod)}
-                      onDeleteProduct={handleDeleteProduct}
-                      onEditProduct={handleEditProduct}
+                      key={row.idusuario}
+                      idusuario={row.idusuario}
+                      usu_login={row.usu_login}
+                      nome={row.nome}
+                      usu_admin={row.usu_admin}
+                      dtcriacao={row.dtcriacao}
+                      selected={selected.indexOf(row.usu_login) !== -1}
+                      handleClick={(event) => handleClick(event, row.usu_login)}
+                      onDeleteUser={handleDeleteUsuario}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={77}
-                  emptyRows={emptyRows(page, rowsPerPage, produtosArray.length)}
+                  emptyRows={emptyRows(page, rowsPerPage, usuariosArray.length)}
                 />
 
                 {notFound && <TableNoData query={filterName} />}
@@ -324,7 +206,7 @@ export default function UserPage() {
         <TablePagination
           page={page}
           component="div"
-          count={produtosArray.length}
+          count={usuariosArray.length}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -334,3 +216,4 @@ export default function UserPage() {
     </Container>
   );
 }
+

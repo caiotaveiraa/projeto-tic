@@ -17,6 +17,8 @@ export const StockLocationPage = lazy(() => import('src/pages/locals'))
 export const EntryPage = lazy(() => import('src/pages/entry'))
 export const NfPage = lazy(() => import('src/pages/nf'))
 export const Relatorios = lazy(() => import('src/pages/relatorios'))
+export const ProductTypePage = lazy(() => import('src/pages/product-type'))
+export const CompositionPage = lazy((import('src/pages/composition')))
 
 // ----------------------------------------------------------------------
 
@@ -37,11 +39,13 @@ export default function Router() {
         { path: 'blog', element: <BlogPage /> },
         { path: 'product', element: <ProductPage /> },
         { path: 'measureunit', element: <MeasureUnitPage /> },
+        { path: 'producttype', element: <ProductTypePage /> },
         { path: 'entry', element: <EntryPage /> },
         { path: 'supplier', element: <SupplierPage /> },
         { path: 'stocklocation', element: <StockLocationPage />},
         { path: 'nf', element: <NfPage />},
         { path: 'relatorios', element: <Relatorios />},
+        { path: 'composition', element: <CompositionPage />},
       ],
     },
     {

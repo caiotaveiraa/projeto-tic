@@ -360,7 +360,7 @@ export default function NfPage() {
         <Box sx={style}>
           <form onSubmit={handleCreate}>
             <Tabs value={tabValue} onChange={handleTabChange}>
-              <Tab label="Detalhes Movimentação" />
+              <Tab label="Dados Gerais" />
               <Tab label="Itens" />
             </Tabs>
 

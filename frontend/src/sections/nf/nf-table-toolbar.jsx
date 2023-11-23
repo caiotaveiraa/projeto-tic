@@ -33,7 +33,7 @@ export default function NfTableToolbar({ numSelected, filterName, onFilterName }
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Procurar Produto..."
+          placeholder="Procurar Nfe..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify

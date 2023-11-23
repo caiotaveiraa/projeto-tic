@@ -52,7 +52,6 @@ export default function LoginView() {
           console.log('Logado')
           localStorage.setItem('nomeUsuario', data.nome)
           localStorage.setItem('idUsuario', data.idusuario)
-
           router.push('/');
         } else {
           console.log('Usuário ou senha inválidos')

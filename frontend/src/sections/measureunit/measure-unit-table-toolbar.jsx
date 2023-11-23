@@ -33,7 +33,7 @@ export default function MeasureUnitTableToolbar({ numSelected, filterName, onFil
         <OutlinedInput
           value={filterName}
           onChange={onFilterName}
-          placeholder="Procurar Unidade de Medida..."
+          placeholder="Procurar Unidade..."
           startAdornment={
             <InputAdornment position="start">
               <Iconify
