@@ -8,6 +8,8 @@ import Modal from '@mui/material/Modal';
 import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import Container from '@mui/material/Container';
@@ -15,6 +17,8 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
@@ -88,7 +92,7 @@ export default function EntryPage() {
   // Itens adicionados
   const [novosItens, setNovosItens] = useState([])
   // Estado para o índice do próximo item a ser adicionado
-  const [indiceItem, setIndiceItem] = useState(1); 
+  const [indiceItem, setIndiceItem] = useState(1);
 
   // Função que traz todos os movimentos cadastrados
   async function obterMovimentos() {
@@ -311,6 +315,9 @@ export default function EntryPage() {
     })
   }
 
+  const handleTipMovChange = (event) => {
+    settipmov(event.target.value);
+  };
 
   const dataFiltered = applyFilter({
     inputData: movimentosArray,
@@ -341,12 +348,19 @@ export default function EntryPage() {
                   marginTop: 15
                 }}
               >
-                <TextField
-                  name="tipmov" label="Tipo de Movimento"
-                  value={tipmov}
-                  onChange={(e) => settipmov(e.target.value)}
-                  sx={{ marginBottom: 2 }}
-                />
+                <FormControl fullWidth sx={{ marginBottom: 1 }}>
+                  <InputLabel id="tipmov-label">Tipo de Movimento</InputLabel>
+                  <Select
+                    labelId="tipmov-label"
+                    id="tipmov"
+                    value={tipmov}
+                    label="Tipo de Movimento"
+                    onChange={handleTipMovChange}
+                  >
+                    <MenuItem value="EN">Entrada</MenuItem>
+                    <MenuItem value="SA">Saída</MenuItem>
+                  </Select>
+                </FormControl>
                 <TextField
                   name="idfor" label="Id do fornecedor"
                   value={idfor}

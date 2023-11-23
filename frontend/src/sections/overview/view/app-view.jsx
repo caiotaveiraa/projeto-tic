@@ -84,7 +84,6 @@ export default function AppView() {
     title: movimento.title,
     description: movimento.description,
     image: `/assets/images/covers/cover_${index+1}.jpg`,
-    postedAt: new Date(movimento.postedAt).toISOString(),
   }));
 
   const last6Movimentos = movimentos.slice(-6); // Pega as últimas 6 movimentações

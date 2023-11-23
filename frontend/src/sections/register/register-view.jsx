@@ -1,10 +1,11 @@
 import { useState } from 'react';
 
 import Box from '@mui/material/Box';
-import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
+import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -17,7 +18,6 @@ import { useRouter } from 'src/routes/hooks';
 import { bgGradient } from 'src/theme/css';
 
 import Logo from 'src/components/logo';
-import Iconify from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
@@ -34,29 +34,37 @@ export default function RegisterView() {
 
   const [name, setName] = useState('')
 
+  const [usu_admin, setUsu_Admin] = useState(false)
+
+
+
   // const [admin, setAdmin] = useState(false)
 
-  const handleLogin = async () => {
-    const loginData = {
+  const handleRegister = async () => {
+    const registerData = {
         usu_login: username,
-        senha: password
+        nome: name,
+        senha: password,
+        usu_admin,
     };
-
+    console.log(registerData)
     try {
         const response = await fetch('http://localhost:3333/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(loginData)
+            body: JSON.stringify(registerData)
         });
 
         const data = await response.json();
+        console.log(data)
         if (data.success) {
-          console.log('Logado')
+          localStorage.setItem('nomeUsuario', data.nome)
+          localStorage.setItem('idUsuario', data.idusuario)
           router.push('/');
         } else {
-          console.log('Usuário ou senha inválidos')
+          console.log('Usuário não cadastrado')
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -65,41 +73,56 @@ export default function RegisterView() {
 
   const renderForm = (
     <>
-      <Stack spacing={3}>
-      <TextField 
-          name="nome" label="Nome" 
-          value={name}  // Atribua o valor do estado 'username' ao campo de texto
-          onChange={(e) => setName(e.target.value)}
-        />
-        <TextField 
-          name="usuario" label="Usuário" 
-          value={username}  // Atribua o valor do estado 'username' ao campo de texto
-          onChange={(e) => setUsername(e.target.value)}  // Atualize o estado 'username' quando o campo de texto for alterado
-        />
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          {/* ... outros campos de texto ... */}
 
-        <TextField
-          name="password"
-          label="Senha"
-          type={showPassword ? 'text' : 'password'}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
-                  <Iconify icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'} />
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-          value={password}  // Atribua o valor do estado 'password' ao campo de senha
-          onChange={(e) => setPassword(e.target.value)}  // Atualize o estado 'password' quando o campo de senha for alterado
-        />
-      </Stack>
+          <TextField 
+            name="nome" label="Nome Completo" 
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Grid>
 
-      <Stack direction="row" alignItems="center" justifyContent="flex-end" sx={{ my: 3 }}>
-        <Link variant="subtitle2" underline="hover">
-          .
-        </Link>
-      </Stack>
+        <Grid item xs={12}>
+          <TextField 
+            name="login" label="Login" 
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <TextField
+            name="password"
+            label="Senha"
+            type={showPassword ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                    {/* ... ícone do olho ... */}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </Grid>
+
+        <Grid item xs={12} alignItems="center" container>
+          <Checkbox
+            checked={usu_admin}
+            onChange={(e) => setUsu_Admin(e.target.checked)}
+            color="primary"
+            inputProps={{ 'aria-label': 'usu_admin checkbox' }}
+          />
+          <Typography variant="body2" sx={{ color: 'text.secondary', marginLeft: 1 }}>
+            Usuário Administrador
+          </Typography>
+        </Grid>
+      </Grid>
 
       <LoadingButton
         fullWidth
@@ -107,9 +130,9 @@ export default function RegisterView() {
         type="submit"
         variant="contained"
         color="inherit"
-        onClick={handleLogin}
+        onClick={handleRegister}
       >
-        Entrar
+        Cadastrar-se
       </LoadingButton>
     </>
   );

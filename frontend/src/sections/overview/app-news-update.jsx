@@ -81,6 +81,5 @@ NewsItem.propTypes = {
     image: PropTypes.string,
     title: PropTypes.string,
     description: PropTypes.string,
-    postedAt: PropTypes.instanceOf(Date),
   }),
 };

@@ -44,34 +44,35 @@ export async function userController(server: FastifyInstance) {
     })
 
     server.post('/register', async (request) => {
-        const postBody = z.object({
-            usu_login: z.string(),
-            nome: z.string(),
-            senha: z.string(),
-            usu_admin: z.boolean()
-        })
-
-        const dtcriacao = new Date();
+        try {
+            const postBody = z.object({
+                usu_login: z.string(),
+                nome: z.string(),
+                senha: z.string(),
+                usu_admin: z.boolean(),
+            });
     
-        const {
-            usu_login,
-            nome,
-            senha,
-            usu_admin
-        } = postBody.parse(request.body)
+            const dtcriacao = new Date();
     
-        const newUsuario = await prisma.tbusuarios.create({
-            data: {
-                usu_login,
-                nome,
-                senha,
-                dtcriacao,
-                usu_admin
-            },
-        })
+            const { usu_login, nome, senha, usu_admin } = postBody.parse(request.body);
     
-        return newUsuario
-    })
+            const newUsuario = await prisma.tbusuarios.create({
+                data: {
+                    usu_login,
+                    nome,
+                    senha,
+                    dtcriacao,
+                    usu_admin,
+                },
+            });
+    
+            return { success: true, idusuario: newUsuario.idusuario, nome: newUsuario.nome, message: 'Cadastro bem-sucedido' };
+        } catch (error) {
+            // Lidar com erros de validação de entrada ou outros erros
+            console.error(error);
+            return { success: false, message: 'Erro de validação' };
+        }
+    });
     
 
     //deletar usuario
